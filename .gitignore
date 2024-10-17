@@ -1,5 +1,8 @@
 # Virtual environment
 venv/
+
+# User-specific
+instance/
 *.env
 
 # Pycache directories
