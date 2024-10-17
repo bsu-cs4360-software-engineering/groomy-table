@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% block head %}
+    <title>Groomy</title>
+    <script async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB18HHJbiZIs6cT4GKPW0Vc_e6WQci8-ZE&loading=async&libraries=places">
+    </script>
+{% endblock %}
+
+{% block nav %}
+<li><a href="{{ url_for('main.index') }}">Home</a></li>
+<li><a class="active" href="#">Book Appointment</a></li>
+<li><a href="#">About Us</a></li>
+<li><a href="#">Contact Us</a></li>
+{% endblock %}
+
+{% block content %}
+    <section>
+        <form id="booking_form" method="post" action="{{ url_for('appts.appointments') }}">
+            {{ form.hidden_tag() }} <!-- CSRF protection -->
+
+            <label for="name">Full Name:</label>
+            {{ form.name(size=32) }}
+
+            <label for="email">Email:</label>
+            {{ form.email(size=32) }}
+
+            <label for="phone_number">Phone Number:</label>
+            {{ form.phone_number(size=32) }}
+
+            <label for="street_address">Street Address:</label>
+            {{ form.street_address(size=32, id='street_address') }}
+
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+
+            <label for="date">Select Date:</label>
+            {{ form.date() }}
+
+            <input type="hidden" id="time" name="time">
+
+            <label for="notes">Notes:</label>
+            {{ form.notes(size=32) }}
+        </form>
+        <div id="time_slots"></div>
+    </section>
+    <script>
+        // Google Places Autocomplete
+        function initAutocomplete() {
+            const input = document.getElementById('street_address');
+            const autocomplete = new google.maps.places.Autocomplete(input);
+            autocomplete.setFields(['address_component', 'geometry']);
+
+            autocomplete.addListener('place_changed', function() {
+                const place = autocomplete.getPlace();
+
+                if (place.geometry) {
+                    // Set latitude and longitude fields
+                    document.getElementById('latitude').value = place.geometry.location.lat();
+                    document.getElementById('longitude').value = place.geometry.location.lng();
+                }
+            });
+        }
+
+        // Function to set min and max dates
+        function setDateLimits() {
+            const today = new Date();
+            const minDate = today.toISOString().split('T')[0];
+            document.getElementById('date').setAttribute('min', minDate);
+
+            const maxDate = new Date();
+            maxDate.setMonth(today.getMonth() + 1);
+            document.getElementById('date').setAttribute('max', maxDate.toISOString().split('T')[0]);
+        }
+
+        function fetchAvailableSlots() {
+            const dateInput = document.getElementById('date');
+            const date = dateInput.value;
+
+            fetch(`/available_slots?date=${date}`)
+                .then(response => response.json())
+                .then(data => {
+                    const slotsDiv = document.getElementById('time_slots');
+                    slotsDiv.innerHTML = '';
+
+                    data.forEach(slot => {
+                        const slotElement = document.createElement('div');
+                        slotElement.textContent = slot.time;
+
+                        if (slot.booked) {
+                            slotElement.style.color = 'red';
+                            slotElement.style.textDecoration = 'line-through';
+                        } else {
+                            slotElement.style.color = 'green';
+
+                            const button = document.createElement('button');
+                            button.textContent = 'Book';
+                            button.addEventListener('click', function() {
+                                // Set the selected time in a hidden field and submit the form
+                                document.getElementById('time').value = slot.time;
+                                document.getElementById('booking_form').submit();
+                            });
+
+                            slotElement.appendChild(button)
+                        }
+
+                        slotsDiv.appendChild(slotElement);
+                    });
+                })
+            .catch(error => {
+                console.error('Error fetching slots:', error);
+            });
+        }   
+        
+        window.onload = function() {
+            setDateLimits();
+            initAutocomplete();
+
+            document.getElementById('date').addEventListener('change', function() {
+                const selectedDate = this.value;
+                if (selectedDate) {
+                    fetchAvailableSlots(selectedDate)
+                }
+            });
+        }
+    </script>
+{% endblock %}
