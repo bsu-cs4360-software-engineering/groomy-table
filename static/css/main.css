@@ -1,0 +1,45 @@
+:root {
+    --primary: #156082;
+    --highlight: #1d81af;
+    --black: #101010;
+}
+
+*, 
+*::before, 
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: var(--highlight);
+}
+
+a:visited {
+    color: var(--black)
+}
+
+a.active {
+    color: var(--primary);
+}
+
+ul,
+ol {
+    list-style: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
