@@ -4,6 +4,27 @@
     <script async
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB18HHJbiZIs6cT4GKPW0Vc_e6WQci8-ZE&loading=async&libraries=places">
     </script>
+    <style>
+        #booking_form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        h1,
+        h2 {
+            color: var(--primary)
+        }
+
+        section {
+            width: 80%;
+            max-width: 1080px;
+            margin: auto;
+        }
+    </style>
 {% endblock %}
 
 {% block nav %}
@@ -15,6 +36,8 @@
 
 {% block content %}
     <section>
+        <h1>Book an Appointment</h1>
+        <h2>Contact Information</h2>
         <form id="booking_form" method="post" action="{{ url_for('appts.appointments') }}">
             {{ form.hidden_tag() }} <!-- CSRF protection -->
 

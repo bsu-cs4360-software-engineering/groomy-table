@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, DateField, HiddenField, TextAreaField
 from wtforms.validators import DataRequired, Optional
 
-from datetime import datetime, time as dt_time
+from datetime import datetime, time, timedelta
 
 from database import db
 from models.appointment import Appointment
@@ -28,6 +28,13 @@ def appointments():
     if form.validate_on_submit():
         appointment_date = form.date.data
         appointment_time = datetime.strptime(form.time.data, '%I:%M %p').time()
+
+        # Define date limits
+        today = datetime.today()
+        max_date = today + timedelta(days=30)
+
+        if appointment_date < today.date() or appointment_date > max_date.date():
+            return render_template('appointments.html', form=form)
 
         new_place = Place(
             address=form.street_address.data,
@@ -73,7 +80,7 @@ def available_slots():
     appointments = Appointment.query.filter_by(date=date).all()
 
     # Create a list of all possible time slots (9 AM to 5 PM)
-    time_slots = [dt_time(hour=hour) for hour in range(9, 18)]
+    time_slots = [time(hour=hour) for hour in range(9, 18)]
     available_slots = []
 
     for slot in time_slots:
