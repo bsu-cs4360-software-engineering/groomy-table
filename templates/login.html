@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+    
+{% block head %}
+    <title>Portal - Groomy</title>
+{% endblock %}
+
+{% block content %}
+    <h1>Login</h1>
+    <form method="post" action="{{ url_for('auth.login') }}">
+        {{ form.hidden_tag() }}
+
+        {{ form.username(size=32, placeholder="Username") }}
+
+        {{ form.password(size=32, placeholder="Password") }}
+
+        {{ form.submit() }}
+    </form>
+{% endblock %}
