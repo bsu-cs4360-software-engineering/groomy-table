@@ -9,6 +9,13 @@
     <form method="post" action="{{ url_for('auth.login') }}">
         {{ form.hidden_tag() }}
 
+        {% if form.username.errors %}
+            <ul>
+                {% for error in form.username.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
         {{ form.username(size=32, placeholder="Username") }}
 
         {{ form.password(size=32, placeholder="Password") }}
