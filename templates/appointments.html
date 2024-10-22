@@ -5,24 +5,25 @@
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB18HHJbiZIs6cT4GKPW0Vc_e6WQci8-ZE&loading=async&libraries=places">
     </script>
     <style>
-        #booking_form {
-            display: flex;
-            flex-direction: column;
+        .slot-label {
+            display: block;
+            padding: var(--button-padding);
+            border: var(--form-border);
+            border-radius: 5px;
+            cursor: pointer;
         }
 
-        h1 {
-            text-align: center;
+        .slot-label input[type="radio"] {
+            display: none;
         }
 
-        h1,
-        h2 {
-            color: var(--primary)
+        .slot-label:hover {
+            background-color: #f0f0f0;
         }
 
-        section {
-            width: 80%;
-            max-width: 1080px;
-            margin: auto;
+        .slot-label input[type="radio"]:checked {
+            background-color: #d0ffd0;
+            border: 1px solid green;
         }
     </style>
 {% endblock %}
@@ -63,6 +64,8 @@
 
             <label for="notes">Notes:</label>
             {{ form.notes(size=32) }}
+
+            <button type="submit" id="submit" disabled>Continue</button>
         </form>
         <div id="time_slots"></div>
     </section>
@@ -95,6 +98,19 @@
             document.getElementById('date').setAttribute('max', maxDate.toISOString().split('T')[0]);
         }
 
+        function updateSubmitButtonState() {
+            const requiredFields = [
+                document.getElementById('name'),
+                document.getElementById('email'),
+                document.getElementById('street_address'),
+                document.getElementById('date'),
+                document.querySelector('input[name="time_slot"]:checked')
+            ];
+
+            const allFilled = requiredFields.every(field => field && field.value);
+            document.getElementById('submit').disabled = !allFilled;
+        }
+
         function fetchAvailableSlots() {
             const dateInput = document.getElementById('date');
             const date = dateInput.value;
@@ -106,27 +122,31 @@
                     slotsDiv.innerHTML = '';
 
                     data.forEach(slot => {
-                        const slotElement = document.createElement('div');
-                        slotElement.textContent = slot.time;
+                        const label = document.createElement('label');
+                        label.className = 'slot-label';
+
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'radio';
+                        checkbox.name = 'time_slot';
+                        checkbox.value = slot.time;
+
+                        checkbox.addEventListener('change', function() {
+                            document.getElementById('time').value = slot.time;
+                            updateSubmitButtonState();
+                        });
+
+                        label.appendChild(checkbox);
+                        label.appendChild(document.createTextNode(slot.time));
 
                         if (slot.booked) {
-                            slotElement.style.color = 'red';
-                            slotElement.style.textDecoration = 'line-through';
+                            label.style.color = 'red';
+                            label.style.textDecoration = 'line-through';
+                            checkbox.disabled = true;
                         } else {
-                            slotElement.style.color = 'green';
-
-                            const button = document.createElement('button');
-                            button.textContent = 'Book';
-                            button.addEventListener('click', function() {
-                                // Set the selected time in a hidden field and submit the form
-                                document.getElementById('time').value = slot.time;
-                                document.getElementById('booking_form').submit();
-                            });
-
-                            slotElement.appendChild(button)
+                            label.style.color = 'green';
                         }
 
-                        slotsDiv.appendChild(slotElement);
+                        slotsDiv.appendChild(label);
                     });
                 })
             .catch(error => {
@@ -141,8 +161,18 @@
             document.getElementById('date').addEventListener('change', function() {
                 const selectedDate = this.value;
                 if (selectedDate) {
-                    fetchAvailableSlots(selectedDate)
+                    fetchAvailableSlots();
                 }
+            });
+
+            ['input', 'change'].forEach(event => {
+                const fields = ['name', 'email', 'street_address', 'date'];
+                fields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (field) {
+                        field.addEventListener(event, updateSubmitButtonState);
+                    }
+                });
             });
         }
     </script>

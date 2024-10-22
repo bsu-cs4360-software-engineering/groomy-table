@@ -2,6 +2,9 @@
     --primary: #56b8e6;
     --highlight: #1d81af;
     --black: #101010;
+
+    --form-border: 1px solid rgba(255, 255, 255, 0.3);
+    --button-padding: 5px;
 }
 
 *, 
@@ -76,14 +79,14 @@ form{
     width: 300px;
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: var(--form-border);
 }
 button{
-    padding: 1px;
+    padding: var(--button-padding);
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: var(--form-border);
     border-radius: 5px;
     margin-left: 5px;
     color: var(--black);
@@ -96,9 +99,9 @@ section{
 }
 
 form input, textarea{
-    border-radius: 20px;
+    border-radius: 10px;
     background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: var(--form-border);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
     padding: 5px;
@@ -127,7 +130,7 @@ nav {
     display: flex;
     justify-content: space-between;
     background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: var(--form-border);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
 }
@@ -165,7 +168,7 @@ nav a {
     margin-left: 20px;
     font-weight: bold;
     background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: var(--form-border);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
     color: var(--highlight);

@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, render_template, request
 from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, DateField, HiddenField, TextAreaField
-from wtforms.validators import DataRequired, Optional
+from wtforms.validators import DataRequired, Optional, Email
 
 from datetime import datetime, time, timedelta
 
@@ -14,7 +14,7 @@ appts = Blueprint('appts', __name__)
 
 class AppointmentForm(FlaskForm):
     name = StringField('Full Name', validators=[DataRequired()])
-    email = EmailField('Email', validators=[DataRequired()])
+    email = EmailField('Email', validators=[DataRequired(), Email()])
     phone_number = StringField('Phone Number', validators=[Optional()])
     street_address = StringField('Street Address', validators=[DataRequired()])
     date = DateField('Select Date', format='%Y-%m-%d', validators=[DataRequired()])
