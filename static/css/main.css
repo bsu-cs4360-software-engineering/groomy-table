@@ -1,5 +1,5 @@
 :root {
-    --primary: #156082;
+    --primary: #56b8e6;
     --highlight: #1d81af;
     --black: #101010;
 }
@@ -16,6 +16,7 @@ body {
     font-family: Arial, sans-serif;
     font-size: 16px;
     line-height: 1.5;
+    background: #3e5770;
 }
 
 a {
@@ -27,7 +28,7 @@ a:hover {
 }
 
 a:visited {
-    color: var(--black)
+    color: var(--black);
 }
 
 a.active {
@@ -43,3 +44,213 @@ img {
     max-width: 100%;
     height: auto;
 }
+header {
+    text-align: center;
+    font-weight: bold;
+    font-size: 50px;
+    color: var(--highlight);
+}
+footer{
+    position: fixed;
+    bottom: 0px;
+    text-align: center;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    /* border-radius: 10px; */
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    
+}
+form{
+    margin-top: 60px;
+    text-align: center;
+    display: inline-block;
+    border: 1px solid var(--black);
+    border-radius: 20px;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 20px;
+    width: 300px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+button{
+    padding: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    margin-left: 5px;
+    color: var(--black);
+    }
+section{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+form input, textarea{
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 5px;
+    margin: 5px;
+}
+form textarea{
+    width: 200px;
+}
+
+
+
+
+
+
+
+
+nav {
+    margin: 27px auto 0;
+    position: relative;
+    width: 690px;
+    height: 50px;
+    background-color: #3a546f;
+    border-radius: 8px;
+    font-size: 0;
+    border: 3px solid black;
+    display: flex;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+nav ul {
+    display: flex;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    width: 100%;
+}
+
+nav li {
+    flex: 1;
+}
+
+nav a {
+    line-height: 50px;
+    height: 100%;
+    font-size: 15px;
+    display: inline-block;
+    position: relative;
+    z-index: 1;
+    text-decoration: none;
+    text-transform: uppercase;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+    width: 100%;
+}
+
+#time_slots{
+    padding: 20px;
+    border-radius: 20px;
+    margin-left: 20px;
+    font-weight: bold;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    color: var(--highlight);
+}
+#time_slots:empty{
+    display: none;
+}
+
+
+/* nav .animation {
+    position: absolute;
+    height: 100%;
+    top: 0;
+    z-index: 0;
+    transition: all .5s ease 0s;
+    border-radius: 8px;
+} */
+/* 
+nav .start-home, nav a:nth-child(1):hover + .animation {
+    width: 100px;
+    left: 0;
+    background-color: #1abc9c;
+}
+
+nav .start-about, nav a:nth-child(2):hover + .animation {
+    width: 110px;
+    left: 100px;
+    background-color: #e74c3c;
+}
+
+nav .start-blog, nav a:nth-child(3):hover + .animation {
+    width: 100px;
+    left: 210px;
+    background-color: #3498db;
+}
+
+nav .start-portefolio, nav a:nth-child(4):hover + .animation {
+    width: 160px;
+    left: 310px;
+    background-color: #9b59b6;
+}
+
+nav .start-contact, nav a:nth-child(5):hover + .animation {
+    width: 120px;
+    left: 470px;
+    background-color: #e67e22;
+}
+
+h1 {
+    text-align: center;
+    margin: 40px 0;
+    font-size: 30px;
+    color: #ecf0f1;
+    text-shadow: 2px 2px 4px #000000;
+    font-family: 'Cherry Swash', cursive;
+}
+
+p {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+    color: #ecf0f1;
+    font-family: 'Cherry Swash', cursive;
+    font-size: 16px;
+}
+
+span {
+    color: #2BD6B4;
+}
+
+footer {
+    bottom: 0;
+    position: fixed;
+    text-align: center;
+    width: 100%;
+    border: 2px solid grey;
+}
+
+div {
+    font-weight: bold;
+    font-size: 2rem;
+    text-align: center;
+}
+
+form {
+    border: 3px solid lightblue;
+} */
