@@ -21,5 +21,6 @@
         {{ form.password(size=32, placeholder="Password") }}
 
         {{ form.submit() }}
+        <p><a href="{{ url_for('new_acc.create_user') }}">Create New Account</a></p>
     </form>
 {% endblock %}
