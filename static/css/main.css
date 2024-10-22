@@ -65,7 +65,7 @@ footer{
 }
 form{
     margin-top: 60px;
-    text-align: left;
+    text-align: center;
     display: inline-block;
     border: 1px solid var(--black);
     border-radius: 20px;
@@ -78,6 +78,13 @@ form{
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
 }
+section{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+
 form input, textarea{
     border-radius: 20px;
     background: rgba(255, 255, 255, 0.1);
