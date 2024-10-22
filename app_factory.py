@@ -14,8 +14,8 @@ def create_app(database_uri="sqlite:///app.db"):
 
     # Register blueprints
     app.register_blueprint(main_blueprint)
-    # app.register_blueprint(auth_blueprint)
-    # app.register_blueprint(dash_blueprint)
-    # app.register_blueprint(appts_blueprint)
+    app.register_blueprint(auth_blueprint)
+    app.register_blueprint(dash_blueprint)
+    app.register_blueprint(appts_blueprint)
 
     return app
