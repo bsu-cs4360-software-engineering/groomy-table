@@ -16,7 +16,8 @@ body {
     font-family: Arial, sans-serif;
     font-size: 16px;
     line-height: 1.5;
-    background: #3e5770;
+    background: #fcfcfc;
+
 }
 
 a {
@@ -55,7 +56,7 @@ footer{
     bottom: 0px;
     text-align: center;
     width: 100%;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(145, 141, 141, 0.1);
     /* border-radius: 10px; */
     padding: 20px;
     backdrop-filter: blur(10px);
@@ -70,7 +71,7 @@ form{
     border: 1px solid var(--black);
     border-radius: 20px;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(145, 141, 141, 0.1);
     border-radius: 10px;
     padding: 20px;
     width: 300px;
@@ -80,7 +81,7 @@ form{
 }
 button{
     padding: 1px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(145, 141, 141, 0.1);
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -91,13 +92,19 @@ button{
 section{
     display: flex;
     justify-content: center;
-    align-items: center;
+    /* align-items: center; */
     margin: 0;
 }
+h1{
+    padding: 10px;
+    text-align: center;
+}
+
+
 
 form input, textarea{
     border-radius: 20px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(145, 141, 141, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
@@ -126,7 +133,7 @@ nav {
     border: 3px solid black;
     display: flex;
     justify-content: space-between;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(145, 141, 141, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
@@ -138,6 +145,9 @@ nav ul {
     margin: 0;
     list-style: none;
     width: 100%;
+}
+nav ul:empty{
+    display: none;
 }
 
 nav li {
@@ -164,7 +174,7 @@ nav a {
     border-radius: 20px;
     margin-left: 20px;
     font-weight: bold;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(145, 141, 141, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
