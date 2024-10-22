@@ -7,3 +7,4 @@ instance/
 
 # Pycache directories
 __pycache__/
+.pytest_cache
