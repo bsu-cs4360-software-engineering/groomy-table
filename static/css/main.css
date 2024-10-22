@@ -78,6 +78,16 @@ form{
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
 }
+button{
+    padding: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    margin-left: 5px;
+    color: var(--black);
+    }
 section{
     display: flex;
     justify-content: center;
@@ -97,6 +107,8 @@ form input, textarea{
 form textarea{
     width: 200px;
 }
+
+
 
 
 
@@ -147,14 +159,30 @@ nav a {
     width: 100%;
 }
 
-nav .animation {
+#time_slots{
+    padding: 20px;
+    border-radius: 20px;
+    margin-left: 20px;
+    font-weight: bold;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    color: var(--highlight);
+}
+#time_slots:empty{
+    display: none;
+}
+
+
+/* nav .animation {
     position: absolute;
     height: 100%;
     top: 0;
     z-index: 0;
     transition: all .5s ease 0s;
     border-radius: 8px;
-}
+} */
 /* 
 nav .start-home, nav a:nth-child(1):hover + .animation {
     width: 100px;
