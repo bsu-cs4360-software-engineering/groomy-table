@@ -5,9 +5,7 @@
     --background: #fcfcfc;
 }
 
-*, 
-*::before, 
-*::after {
+*, *::before, *::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -26,15 +24,14 @@ a {
     text-decoration: none;
 }
 
-a:hover {
+a:hover{
     color: var(--highlight);
 }
 
 a:visited {
     color: var(--black);
 }
-
-a.active {
+a:active {
     color: var(--primary);
 }
 
@@ -87,6 +84,8 @@ form input, textarea{
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
     padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
     margin: 5px;
 }
 form textarea{
