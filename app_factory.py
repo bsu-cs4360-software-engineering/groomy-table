@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 
 from routes.index import main as main_blueprint
 from routes.auth import auth as auth_blueprint
@@ -19,5 +19,9 @@ def create_app(database_uri="sqlite:///app.db"):
     app.register_blueprint(dash_blueprint)
     app.register_blueprint(appts_blueprint)
     app.register_blueprint(new_acc_blueprint)
+
+    @app.errorhandler(404)
+    def not_found(error):
+        return render_template('404.html'), 404
 
     return app
