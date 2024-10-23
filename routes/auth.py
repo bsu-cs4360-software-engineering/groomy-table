@@ -10,7 +10,7 @@ from models.user import User
 auth = Blueprint('auth', __name__)
 
 class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
+    username_or_email = StringField('Username or Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
@@ -19,15 +19,19 @@ def login():
     form = LoginForm()
 
     if form.validate_on_submit():
-        username = form.username.data
+        username_or_email = form.username_or_email.data
         password = form.password.data
-        user = User.query.filter_by(username=username).first()
+        user_username = User.query.filter_by(username=username_or_email).first()
+        user_email = User.query.filter_by(email=username_or_email).first()
 
-        if user and check_password_hash(user.password, password):
-            login_user(user)
+        if user_username and check_password_hash(user_username.password, password):
+            login_user(user_username)
+            return redirect(url_for('dash.dashboard'))
+        elif user_email and check_password_hash(user_email.password, password):
+            login_user(user_email)
             return redirect(url_for('dash.dashboard'))
         else:
-            form.username.errors.append("Invalid username or password.")
+            form.username_or_email.errors.append("Invalid username or password.")
         
     return render_template('login.html', form=form)
 
