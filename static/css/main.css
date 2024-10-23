@@ -3,6 +3,11 @@
     --highlight: #1d81af;
     --black: #101010;
     --background: #fcfcfc;
+
+    --clear-border: 1px solid rgba(255, 255, 255, 0.3);
+    --border-radius: 20px;
+    --grey-background: rgba(145, 141, 141, 0.1);
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 *, *::before, *::after {
@@ -55,48 +60,48 @@ footer{
     bottom: 0px;
     text-align: center;
     width: 100%;
-    background: rgba(145, 141, 141, 0.1);
-    border-radius: 20px;
+    background: var(--grey-background);
+    border-radius: var(--border-radius);
     padding: 20px;
     backdrop-filter: blur(10px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: var(--box-shadow);
+    border: var(--clear-border);
     
 }
 form{
     margin-top: 60px;
     text-align: center;
-    display: inline-block;
-    border: 1px solid var(--black);
-    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--border-radius);
     justify-content: center;
-    background: rgba(145, 141, 141, 0.1);
+    background: var(--grey-background);
     padding: 20px;
     width: 300px;
     backdrop-filter: blur(10px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: var(--box-shadow);
+    border: var(--clear-border);
 }
 form input, textarea{
-    border-radius: 20px;
-    background: rgba(145, 141, 141, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius);
+    background: var(--grey-background);
+    border: var(--clear-border);
+    box-shadow: var(--box-shadow);
     backdrop-filter: blur(10px);
-    padding: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding: 5px 10px;
     margin: 5px;
 }
 form textarea{
-    width: 200px;
+    max-width: 200px;
+    padding: 10px;
+    align-self: center;
 }
 button{
     padding: 1px;
-    background: rgba(145, 141, 141, 0.1);
+    background: var(--grey-background);
     backdrop-filter: blur(10px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: var(--box-shadow);
+    border: var(--clear-border);
     border-radius: 5px;
     margin-left: 5px;
     color: var(--black);
@@ -104,13 +109,13 @@ button{
     
 #time_slots{
     padding: 20px;
-    border-radius: 20px;
+    border-radius: var(--border-radius);
     margin-left: 20px;
     margin-top:60px;
     font-weight: bold;
-    background: rgba(145, 141, 141, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background: var(--grey-background);
+    border: var(--clear-border);
+    box-shadow: var(--box-shadow);
     backdrop-filter: blur(10px);
     color: var(--highlight);
 }
@@ -145,15 +150,13 @@ nav {
     position: relative;
     width: 690px;
     height: 50px;
-    background-color: #3a546f;
-    border-radius: 20px;
+    border-radius: var(--border-radius);
     font-size: 0;
-    border: 3px solid black;
     display: flex;
     justify-content: space-between;
-    background: rgba(145, 141, 141, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background: var(--grey-background);
+    border: var(--clear-border);
+    box-shadow: var(--box-shadow);
     backdrop-filter: blur(10px);
 }
 
