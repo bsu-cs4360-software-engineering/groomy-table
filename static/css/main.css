@@ -29,15 +29,12 @@ a {
     text-decoration: none;
 }
 
-a:hover{
-    color: var(--highlight);
-}
-
 a:visited {
     color: var(--black);
 }
-a:active {
-    color: var(--primary);
+
+a.active {
+    color: var(--highlight);
 }
 
 ul,
@@ -188,4 +185,16 @@ nav a {
     color: white;
     cursor: pointer;
     width: 100%;
+}
+
+a:hover,
+nav a:hover,
+nav a.active:hover {
+    color: var(--highlight);
+}
+
+a:active,
+nav a:active,
+nav a.active:active {
+    color: var(--primary);
 }
