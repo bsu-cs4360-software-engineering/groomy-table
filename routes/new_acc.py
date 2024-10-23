@@ -1,8 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from wtforms import StringField, PasswordField, SubmitField
 from flask_wtf import FlaskForm
-from wtforms.validators import DataRequired
-from flask_login import login_user, logout_user, login_required
+from wtforms.validators import DataRequired, Email
 from werkzeug.security import generate_password_hash
 
 from database import db
@@ -12,11 +11,10 @@ new_acc = Blueprint('new_acc', __name__)
 
 class CreateAccountForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
-    email = StringField('E-mail', validators=[DataRequired()])
+    email = StringField('E-mail', validators=[Email(), DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired()])
     submit = SubmitField('Create Account')
-
 
 @new_acc.route('/create_account', methods = ['GET', 'POST'])
 def create_user():
@@ -24,8 +22,11 @@ def create_user():
 
     if form.validate_on_submit():
 
-        if username_exists(form.username.data) == False and password_match(form.password.data, form.confirm_password.data) == True:
-
+        if username_exists(form.username.data) == True:
+            form.username.errors.append("Username taken.")
+        elif passwords_match(form.password.data, form.confirm_password.data) == False:
+            form.username.errors.append("Passwords do not match.")
+        else:
             new_user = User(
                 username = form.username.data,
                 email    = form.email.data,
@@ -44,7 +45,7 @@ def username_exists (input_username : str) -> bool:
     else:
         return False
     
-def password_match(password1 : str, password2 : str) -> bool:
+def passwords_match(password1 : str, password2 : str) -> bool:
     if password1 == password2:
         return True
     else:
