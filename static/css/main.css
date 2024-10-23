@@ -27,7 +27,7 @@ a {
 }
 
 a:hover {
-    text-decoration: var(--highlight);
+    color: var(--highlight);
 }
 
 a:visited {
@@ -59,7 +59,7 @@ footer{
     text-align: center;
     width: 100%;
     background: rgba(145, 141, 141, 0.1);
-    /* border-radius: 10px; */
+    border-radius: 20px;
     padding: 20px;
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
