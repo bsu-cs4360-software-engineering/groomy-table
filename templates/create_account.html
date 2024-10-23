@@ -6,6 +6,7 @@
 
 {% block content %}
     <h1>Create Account</h1>
+    <section>
     <form method="post" action="{{ url_for('new_acc.create_user') }}">
         {{ form.hidden_tag() }}
 
@@ -47,4 +48,5 @@
 
         {{ form.submit() }}
     </form>
+</section>
 {% endblock %}
