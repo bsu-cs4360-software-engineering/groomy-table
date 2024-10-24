@@ -60,12 +60,10 @@
             <label for="date">Select Date:</label>
             {{ form.date() }}
 
-            {{ form.time() }}
-
             <label for="notes">Notes:</label>
             {{ form.notes(size=32) }}
 
-            <button type="submit" id="submit" disabled>Continue</button>
+            <button type="submit" id="submit">Proceed to Payment</button>
         </form>
         <div id="time_slots"></div>
     </section>
@@ -98,19 +96,6 @@
             document.getElementById('date').setAttribute('max', maxDate.toISOString().split('T')[0]);
         }
 
-        function updateSubmitButtonState() {
-            const requiredFields = [
-                document.getElementById('name'),
-                document.getElementById('email'),
-                document.getElementById('street_address'),
-                document.getElementById('date'),
-                document.querySelector('input[name="time_slot"]:checked')
-            ];
-
-            const allFilled = requiredFields.every(field => field && field.value);
-            document.getElementById('submit').disabled = !allFilled;
-        }
-
         function fetchAvailableSlots() {
             const dateInput = document.getElementById('date');
             const date = dateInput.value;
@@ -132,7 +117,6 @@
 
                         checkbox.addEventListener('change', function() {
                             document.getElementById('time').value = slot.time;
-                            updateSubmitButtonState();
                         });
 
                         label.appendChild(checkbox);
@@ -163,16 +147,6 @@
                 if (selectedDate) {
                     fetchAvailableSlots();
                 }
-            });
-
-            ['input', 'change'].forEach(event => {
-                const fields = ['name', 'email', 'street_address', 'date'];
-                fields.forEach(fieldId => {
-                    const field = document.getElementById(fieldId);
-                    if (field) {
-                        field.addEventListener(event, updateSubmitButtonState);
-                    }
-                });
             });
         }
     </script>

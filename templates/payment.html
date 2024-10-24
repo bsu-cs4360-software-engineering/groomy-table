@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block head %}
+    <title>Book Your Appointment - Groomy</title>
+{% endblock %}
+
+{% block nav %}
+    <li><a class="start-home" href="/">Home</a></li>
+    <li><a href="{{ url_for('appts.appointments') }}">Book Appointment</a></li>
+    <li><a href="#">About Us</a></li>
+    <li><a href="#">Contact Us</a></li>   
+{% endblock %}
+
+{% block content %}
+    <section>
+        <h2>Payment Method</h2>
+        <form method="post">
+            <button type="submit">Book Appointment</button>
+        </form>
+        <h2>Review Your Appointment Details</h2>
+        <p>Name: {{ appointment_data.name }}</p>
+        <p>Email: {{ appointment_data.email }}</p>
+        <p>Phone: {{ appointment_data.phone_number }}</p>
+        <p>Address: {{ appointment_data.street_address }}</p>
+        <p>Date: {{ appointment_data.date }}</p>
+        <p>Time: {{ appointment_data.time }}</p>
+        <p>Notes: {{ appointment_data.notes }}</p>
+    </section>
+{% endblock %}
