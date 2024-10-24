@@ -30,10 +30,15 @@ def app():
     yield app
 
 @pytest.fixture()
+def database(app):
+    with app.app_context():
+        yield db
+
+@pytest.fixture()
 def client(app):
     return app.test_client()
 
-def extract_csrf(response):
+def _extract_csrf(response):
     csrf_token = None
     for line in response.data.decode().splitlines():
         if 'name="csrf_token"' in line:
@@ -47,4 +52,4 @@ def extract_csrf(response):
 @pytest.fixture()
 def csrf_token(client):
     response = client.get('/login')
-    return extract_csrf(response)
+    return _extract_csrf(response)
