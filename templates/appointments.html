@@ -29,10 +29,10 @@
 {% endblock %}
 
 {% block nav %}
-<li><a href="{{ url_for('main.index') }}">Home</a></li>
-<li><a class="active" href="#">Book Appointment</a></li>
-<li><a href="#">About Us</a></li>
-<li><a href="#">Contact Us</a></li>
+    <li><a href="{{ url_for('main.index') }}">Home</a></li>
+    <li><a href="{{ url_for('appts.appointments') }}">Book Appointment</a></li>
+    <li><a href="#">About Us</a></li>
+    <li><a href="#">Contact Us</a></li>
 {% endblock %}
 
 {% block content %}
