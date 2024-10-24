@@ -19,7 +19,7 @@ class AppointmentForm(FlaskForm):
     phone_number = StringField('Phone Number', validators=[Optional()])
     street_address = StringField('Street Address', validators=[DataRequired()])
     date = DateField('Select Date', format='%Y-%m-%d', validators=[DataRequired()])
-    time = HiddenField('Appointment Time')
+    time = HiddenField('Appointment Time', validators=[DataRequired()])
     notes = TextAreaField('Notes', validators=[Optional()])
 
 @appts.route('/appointments', methods=['GET', 'POST'])

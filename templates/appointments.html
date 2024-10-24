@@ -25,6 +25,12 @@
             background-color: #d0ffd0;
             border: 1px solid green;
         }
+
+        .form-container {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+        }
     </style>
 {% endblock %}
 
@@ -38,33 +44,35 @@
 {% block content %}
     <section>
         <h2>Contact Information</h2>
-        <form id="booking_form" method="post" action="{{ url_for('appts.appointments') }}">
-            {{ form.hidden_tag() }} <!-- CSRF protection -->
+        <div class="form-container">
+            <form id="booking_form" method="post" action="{{ url_for('appts.appointments') }}">
+                {{ form.hidden_tag() }} <!-- CSRF protection -->
 
-            <label for="name">Full Name:</label>
-            {{ form.name(size=32) }}
+                <label for="name">Full Name:</label>
+                {{ form.name(size=32) }}
 
-            <label for="email">Email:</label>
-            {{ form.email(size=32) }}
+                <label for="email">Email:</label>
+                {{ form.email(size=32) }}
 
-            <label for="phone_number">Phone Number:</label>
-            {{ form.phone_number(size=32) }}
+                <label for="phone_number">Phone Number:</label>
+                {{ form.phone_number(size=32) }}
 
-            <label for="street_address">Street Address:</label>
-            {{ form.street_address(size=32, id='street_address') }}
+                <label for="street_address">Street Address:</label>
+                {{ form.street_address(size=32, id='street_address') }}
 
-            <input type="hidden" id="latitude" name="latitude">
-            <input type="hidden" id="longitude" name="longitude">
+                <input type="hidden" id="latitude" name="latitude">
+                <input type="hidden" id="longitude" name="longitude">
 
-            <label for="date">Select Date:</label>
-            {{ form.date() }}
+                <label for="date">Select Date:</label>
+                {{ form.date() }}
 
-            <label for="notes">Notes:</label>
-            {{ form.notes(size=32) }}
+                <label for="notes">Notes:</label>
+                {{ form.notes(size=32) }}
 
-            <button type="submit" id="submit">Proceed to Payment</button>
-        </form>
-        <div id="time_slots"></div>
+                <button type="submit" id="submit">Proceed to Payment</button>
+            </form>
+            <div id="time_slots"></div>
+        </div>
     </section>
     <script>
         // Google Places Autocomplete

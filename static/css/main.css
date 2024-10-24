@@ -97,8 +97,9 @@ form textarea{
     align-self: center;
 }
 
+form input[type="submit"],
 button {
-    padding: 1px;
+    padding: 5px 10px;
     background: var(--grey-background);
     backdrop-filter: blur(10px);
     box-shadow: var(--box-shadow);
@@ -106,6 +107,7 @@ button {
     border-radius: 5px;
     margin-left: 5px;
     color: var(--black);
+    align-self: center;
 }
     
 #time_slots{
@@ -127,8 +129,9 @@ button {
 
 section{
     display: flex;
+    flex-direction: column;
     justify-content: center;
-    /* align-items: center; */
+    align-items: center;
     margin: 0;
 }
 
