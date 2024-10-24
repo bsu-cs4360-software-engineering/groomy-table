@@ -37,7 +37,6 @@
 
 {% block content %}
     <section>
-        <h1>Book an Appointment</h1>
         <h2>Contact Information</h2>
         <form id="booking_form" method="post" action="{{ url_for('appts.appointments') }}">
             {{ form.hidden_tag() }} <!-- CSRF protection -->

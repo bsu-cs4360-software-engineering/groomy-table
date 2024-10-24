@@ -1,4 +1,7 @@
+import os
+import stripe
 from flask import Flask, render_template
+from dotenv import load_dotenv
 
 from routes.index import main as main_blueprint
 from routes.auth import auth as auth_blueprint
@@ -7,11 +10,15 @@ from routes.appointment import appts as appts_blueprint
 from routes.new_acc import new_acc as new_acc_blueprint
 
 def create_app(database_uri="sqlite:///app.db"):
+    load_dotenv()
+
     app = Flask(__name__)
 
     app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = "TEMP_KEY"
+
+    stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
     # Register blueprints
     app.register_blueprint(main_blueprint)

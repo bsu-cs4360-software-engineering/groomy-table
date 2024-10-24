@@ -27,7 +27,8 @@ a {
     text-decoration: none;
 }
 
-a:visited {
+a:visited,
+nav a:visited {
     color: var(--black);
 }
 
@@ -179,6 +180,7 @@ nav a {
     text-align: center;
     cursor: pointer;
     width: 100%;
+    color: var(--black);
 }
 
 a:hover,

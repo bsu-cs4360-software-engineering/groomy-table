@@ -1,3 +1,4 @@
+import stripe
 from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
 from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, DateField, HiddenField, TextAreaField
@@ -81,8 +82,22 @@ def payment():
         return redirect(url_for('appts.appointments'))
     
     if request.method == 'POST':
-        # Payment processing
-        return redirect(url_for('appts.confirmation'))
+        try:
+            amount = 1000
+            token = request.json.get('token')
+            description = f"Appointment Booking Charge for {appointment_data['name']}"
+
+            charge = stripe.Charge.create(
+                amount=amount,
+                currency="usd",
+                source=token,
+                description=description
+            )
+
+            return jsonify({'redirect_url': url_for('appts.confirmation')})
+    
+        except stripe.error.StripeError as e:
+            return jsonify({'status': 'error', 'message': str(e)}), 400
     
     return render_template('payment.html', appointment_data=appointment_data)
 
