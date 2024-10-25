@@ -7,6 +7,7 @@
     --clear-border: 1px solid rgba(255, 255, 255, 0.3);
     --border-radius: 20px;
     --grey-background: rgba(145, 141, 141, 0.1);
+    --dark-grey-background: #dfdddd;
     --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -20,7 +21,17 @@ body {
     font-family: Arial, sans-serif;
     font-size: 16px;
     line-height: 1.5;
-    background: var(--background)
+    background: var(--background);
+    min-height: 100svh;
+}
+
+body.flex {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
 }
 
 a {
@@ -53,7 +64,9 @@ header {
 }
 
 footer {
-    position: fixed;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
     bottom: 0px;
     text-align: center;
     width: 100%;
@@ -65,8 +78,13 @@ footer {
     border: var(--clear-border);
 }
 
+.footer_left,
+.footer_center,
+.footer_right {
+    flex: 1;
+}
+
 form {
-    margin-top: 60px;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -96,23 +114,25 @@ form textarea{
     align-self: center;
 }
 
+form input[type="submit"],
 button {
-    padding: 1px;
+    padding: 5px 10px;
     background: var(--grey-background);
     backdrop-filter: blur(10px);
     box-shadow: var(--box-shadow);
     border: var(--clear-border);
     border-radius: 5px;
-    margin-left: 5px;
+    margin: 5px;
     color: var(--black);
+    align-self: center;
 }
     
 #time_slots{
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
     padding: 20px;
     border-radius: var(--border-radius);
-    margin-left: 20px;
-    margin-top:60px;
-    font-weight: bold;
     background: var(--grey-background);
     border: var(--clear-border);
     box-shadow: var(--box-shadow);
@@ -126,8 +146,10 @@ button {
 
 section{
     display: flex;
+    flex-direction: column;
+    row-gap: 20px;
     justify-content: center;
-    /* align-items: center; */
+    align-items: center;
     margin: 0;
 }
 
@@ -142,6 +164,7 @@ nav {
     width: 690px;
     height: 50px;
     border-radius: var(--border-radius);
+    margin-bottom: 60px;
     font-size: 0;
     display: flex;
     justify-content: space-between;
@@ -179,6 +202,7 @@ nav a {
     text-align: center;
     cursor: pointer;
     width: 100%;
+    color: var(--black);
 }
 
 a:hover,

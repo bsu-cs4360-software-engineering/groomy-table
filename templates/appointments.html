@@ -1,9 +1,48 @@
 {% extends 'base.html' %}
 {% block head %}
-    <title>Groomy</title>
+    <title>Book Appointment - Groomy</title>
     <script async
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB18HHJbiZIs6cT4GKPW0Vc_e6WQci8-ZE&loading=async&libraries=places">
     </script>
+    <style>
+        .slot-label {
+            display: block;
+            padding: 5px;
+            border: 2px solid var(--black);
+            color: var(--black);
+            box-shadow: var(--box-shadow);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .slot-label input[type="radio"] {
+            display: none;
+        }
+
+        .slot-label:hover {
+            backdrop-filter: blur(10px);
+        }
+
+        .slot-label:has(input[type="radio"]:disabled),
+        .slot-label:has(input[type="radio"]:disabled):hover {
+            border: none;
+            backdrop-filter: none;
+            box-shadow: none;
+            cursor: default;
+        }
+
+        .slot-label:has(input[type="radio"]:checked) {
+            background: var(--dark-grey-background);
+            border: 2px solid var(--highlight);
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: row;
+            column-gap: 20px;
+            align-items: flex-start;
+        }
+    </style>
 {% endblock %}
 
 {% block nav %}
@@ -15,33 +54,36 @@
 
 {% block content %}
     <section>
-        <form id="booking_form" method="post" action="{{ url_for('appts.appointments') }}">
-            {{ form.hidden_tag() }} <!-- CSRF protection -->
+        <h2>Contact Information</h2>
+        <div class="form-container">
+            <form id="booking_form" method="post" action="{{ url_for('appts.appointments') }}">
+                {{ form.hidden_tag() }} <!-- CSRF protection -->
 
-            <label for="name">Full Name:</label>
-            {{ form.name(size=32) }}
+                <label for="name">Full Name:</label>
+                {{ form.name(size=32) }}
 
-            <label for="email">Email:</label>
-            {{ form.email(size=32) }}
+                <label for="email">Email:</label>
+                {{ form.email(size=32) }}
 
-            <label for="phone_number">Phone Number:</label>
-            {{ form.phone_number(size=32) }}
+                <label for="phone_number">Phone Number:</label>
+                {{ form.phone_number(size=32, pattern='[0-9]{3}-[0-9]{3}-[0-9]{4}', placeholder='123-456-7890') }}
 
-            <label for="street_address">Street Address:</label>
-            {{ form.street_address(size=32, id='street_address') }}
+                <label for="street_address">Street Address:</label>
+                {{ form.street_address(size=32, id='street_address') }}
 
-            <input type="hidden" id="latitude" name="latitude">
-            <input type="hidden" id="longitude" name="longitude">
+                <input type="hidden" id="latitude" name="latitude">
+                <input type="hidden" id="longitude" name="longitude">
 
-            <label for="date">Select Date:</label>
-            {{ form.date() }}
+                <label for="date">Select Date:</label>
+                {{ form.date() }}
 
-            <input type="hidden" id="time" name="time">
+                <label for="notes">Notes:</label>
+                {{ form.notes(size=32) }}
 
-            <label for="notes">Notes:</label>
-            {{ form.notes(size=32) }}
-        </form>
-        <div id="time_slots"></div>
+                <button type="submit" id="submit">Proceed to Payment</button>
+            </form>
+            <div id="time_slots"></div>
+        </div>
     </section>
     <script>
         // Google Places Autocomplete
@@ -64,6 +106,7 @@
         // Function to set min and max dates
         function setDateLimits() {
             const today = new Date();
+            today.setDate(today.getDate() + 1);
             const minDate = today.toISOString().split('T')[0];
             document.getElementById('date').setAttribute('min', minDate);
 
@@ -83,27 +126,27 @@
                     slotsDiv.innerHTML = '';
 
                     data.forEach(slot => {
-                        const slotElement = document.createElement('div');
-                        slotElement.textContent = slot.time;
+                        const label = document.createElement('label');
+                        label.className = 'slot-label';
+
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'radio';
+                        checkbox.name = 'time_slot';
+                        checkbox.value = slot.time;
+
+                        checkbox.addEventListener('change', function() {
+                            document.getElementById('time').value = slot.time;
+                        });
+
+                        label.appendChild(checkbox);
+                        label.appendChild(document.createTextNode(slot.time));
 
                         if (slot.booked) {
-                            slotElement.style.color = 'red';
-                            slotElement.style.textDecoration = 'line-through';
-                        } else {
-                            slotElement.style.color = 'green';
-
-                            const button = document.createElement('button');
-                            button.textContent = 'Book';
-                            button.addEventListener('click', function() {
-                                // Set the selected time in a hidden field and submit the form
-                                document.getElementById('time').value = slot.time;
-                                document.getElementById('booking_form').submit();
-                            });
-
-                            slotElement.appendChild(button)
+                            label.style.textDecoration = 'line-through';
+                            checkbox.disabled = true;
                         }
 
-                        slotsDiv.appendChild(slotElement);
+                        slotsDiv.appendChild(label);
                     });
                 })
             .catch(error => {
@@ -118,7 +161,7 @@
             document.getElementById('date').addEventListener('change', function() {
                 const selectedDate = this.value;
                 if (selectedDate) {
-                    fetchAvailableSlots(selectedDate)
+                    fetchAvailableSlots();
                 }
             });
         }
