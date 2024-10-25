@@ -27,6 +27,9 @@ def appointments():
     form = AppointmentForm()
 
     if form.validate_on_submit():
+        if not form.time.data:
+            return render_template('appointments.html', form=form)
+
         # Validate the selected date
         if not is_valid_date(form.date.data):
             form.date.errors.append('Select a date between today and a month from now.')
@@ -62,7 +65,7 @@ def available_slots():
     appointments = Appointment.query.filter_by(date=date).all()
 
     # Create a list of all possible time slots (9 AM to 5 PM)
-    time_slots = [time(hour=hour) for hour in range(9, 18)]
+    time_slots = [time(hour=hour) for hour in range(9, 18, 2)]
     available_slots = []
 
     for slot in time_slots:
@@ -142,5 +145,6 @@ def confirmation():
 
 def is_valid_date(selected_date):
     today = datetime.today().date()
+    min_date = today + timedelta(days=1)
     max_date = today + timedelta(days=30)
-    return today <= selected_date <= max_date
+    return min_date <= selected_date <= max_date

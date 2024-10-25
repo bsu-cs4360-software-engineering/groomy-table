@@ -7,8 +7,10 @@
     <style>
         .slot-label {
             display: block;
-            padding: var(--button-padding);
-            border: var(--form-border);
+            padding: 5px;
+            border: 2px solid var(--black);
+            color: var(--black);
+            box-shadow: var(--box-shadow);
             border-radius: 5px;
             cursor: pointer;
         }
@@ -18,12 +20,20 @@
         }
 
         .slot-label:hover {
-            background-color: #f0f0f0;
+            backdrop-filter: blur(10px);
         }
 
-        .slot-label input[type="radio"]:checked {
-            background-color: #d0ffd0;
-            border: 1px solid green;
+        .slot-label:has(input[type="radio"]:disabled),
+        .slot-label:has(input[type="radio"]:disabled):hover {
+            border: none;
+            backdrop-filter: none;
+            box-shadow: none;
+            cursor: default;
+        }
+
+        .slot-label:has(input[type="radio"]:checked) {
+            background: var(--dark-grey-background);
+            border: 2px solid var(--highlight);
         }
 
         .form-container {
@@ -95,6 +105,7 @@
         // Function to set min and max dates
         function setDateLimits() {
             const today = new Date();
+            today.setDate(today.getDate() + 1);
             const minDate = today.toISOString().split('T')[0];
             document.getElementById('date').setAttribute('min', minDate);
 
@@ -130,11 +141,8 @@
                         label.appendChild(document.createTextNode(slot.time));
 
                         if (slot.booked) {
-                            label.style.color = 'red';
                             label.style.textDecoration = 'line-through';
                             checkbox.disabled = true;
-                        } else {
-                            label.style.color = 'green';
                         }
 
                         slotsDiv.appendChild(label);
