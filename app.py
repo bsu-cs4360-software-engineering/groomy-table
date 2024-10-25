@@ -1,4 +1,4 @@
-from app_factory import create_app
+from app_factory import create_app, init_services
 from login_manager import login_manager
 from database import db
 
@@ -12,6 +12,11 @@ login_manager.init_app(app)
 # Create database tables
 with app.app_context():
     db.create_all()
+
+    services = init_services()
+    if services is not None:
+        db.session.bulk_save_objects(services)
+        db.session.commit()
 
 if __name__ == "__main__":
     app.run(debug=True)
