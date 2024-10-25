@@ -22,9 +22,11 @@ def create_user():
 
     if form.validate_on_submit():
 
-        if username_exists(form.username.data) == True:
+        if _username_exists(form.username.data) == True:
             form.username.errors.append("Username taken.")
-        elif passwords_match(form.password.data, form.confirm_password.data) == False:
+        elif _email_exists(form.email.data) == True:
+            form.username.errors.append("Email already in use.")
+        elif _passwords_match(form.password.data, form.confirm_password.data) == False:
             form.username.errors.append("Passwords do not match.")
         else:
             new_user = User(
@@ -39,13 +41,19 @@ def create_user():
             
     return render_template('create_account.html', form=form)
 
-def username_exists (input_username : str) -> bool:
+def _username_exists(input_username : str) -> bool:
     if User.query.filter_by(username = input_username).first():
         return True
     else:
         return False
     
-def passwords_match(password1 : str, password2 : str) -> bool:
+def _email_exists(input_email : str) -> bool:
+    if User.query.filter_by(email = input_email).first():
+        return True
+    else:
+        return False
+    
+def _passwords_match(password1 : str, password2 : str) -> bool:
     if password1 == password2:
         return True
     else:

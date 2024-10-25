@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     {% block head %}{% endblock %}
 </head>
-<body>
+<body class="flex">
     <header>
         {% block header %}
         <div><a href="{{ url_for('main.index') }}">Home</a></div>
@@ -14,7 +14,6 @@
             <ul>
                 {% block nav %}{% endblock %}
             </ul>
-            <div class="animation start-home"></div>
         </nav>
         {% endblock %}
     </header>
@@ -23,11 +22,12 @@
     </main>
     <footer>
         {% block footer %}
-            <p>Copyright 2024 Groomy</p>
-            <p>Socials</p>
-            <p><a href="{{ url_for('auth.login') }}">MyGroomy</a></p>
+            <div class="footer_left">Copyright 2024 Groomy</div>
+            <div class="footer_center">Socials</div class="footer_center">
+            <div class="footer_right"><a href="{{ url_for('auth.login') }}">MyGroomy</a></div>
         {% endblock %}
     </footer>
     <script src="{{ url_for('static', filename='js/active.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/margin.js') }}"></script>
 </body>
 </html>
