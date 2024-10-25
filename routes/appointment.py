@@ -1,7 +1,7 @@
 import stripe
 from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
 from flask_wtf import FlaskForm
-from wtforms import StringField, EmailField, DateField, HiddenField, TextAreaField
+from wtforms import StringField, EmailField, DateField, HiddenField, TextAreaField, TelField
 from wtforms.validators import DataRequired, Optional, Email
 
 from datetime import datetime, time, timedelta
@@ -16,7 +16,7 @@ appts = Blueprint('appts', __name__)
 class AppointmentForm(FlaskForm):
     name = StringField('Full Name', validators=[DataRequired()])
     email = EmailField('Email', validators=[DataRequired(), Email()])
-    phone_number = StringField('Phone Number', validators=[Optional()])
+    phone_number = TelField('Phone Number', validators=[Optional()])
     street_address = StringField('Street Address', validators=[DataRequired()])
     date = DateField('Select Date', format='%Y-%m-%d', validators=[DataRequired()])
     time = HiddenField('Appointment Time', validators=[DataRequired()])
@@ -31,8 +31,8 @@ def appointments():
             return render_template('appointments.html', form=form)
 
         # Validate the selected date
-        if not is_valid_date(form.date.data):
-            form.date.errors.append('Select a date between today and a month from now.')
+        if not _is_valid_date(form.date.data):
+            form.name.errors.append('Select a date between today and a month from now.')
             return render_template('appointments.html', form=form)
         
         latitude = request.form.get('latitude')
@@ -143,7 +143,7 @@ def confirmation():
 
     return render_template('confirmation.html', appointment=appointment_data)
 
-def is_valid_date(selected_date):
+def _is_valid_date(selected_date):
     today = datetime.today().date()
     min_date = today + timedelta(days=1)
     max_date = today + timedelta(days=30)

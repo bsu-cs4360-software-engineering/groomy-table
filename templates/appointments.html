@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block head %}
-    <title>Groomy</title>
+    <title>Book Appointment - Groomy</title>
     <script async
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB18HHJbiZIs6cT4GKPW0Vc_e6WQci8-ZE&loading=async&libraries=places">
     </script>
@@ -39,6 +39,7 @@
         .form-container {
             display: flex;
             flex-direction: row;
+            column-gap: 20px;
             align-items: flex-start;
         }
     </style>
@@ -65,7 +66,7 @@
                 {{ form.email(size=32) }}
 
                 <label for="phone_number">Phone Number:</label>
-                {{ form.phone_number(size=32) }}
+                {{ form.phone_number(size=32, pattern='[0-9]{3}-[0-9]{3}-[0-9]{4}', placeholder='123-456-7890') }}
 
                 <label for="street_address">Street Address:</label>
                 {{ form.street_address(size=32, id='street_address') }}
