@@ -126,6 +126,33 @@ button {
     color: var(--black);
     align-self: center;
 }
+table {
+    border-collapse: collapse;
+    background: var(--grey-background);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+  }
+  
+  th,td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--grey-background);
+    color: var(--black);
+  }
+  
+  th {
+    background-color: var(--grey-background);
+    font-weight: bold;
+    color: var(--black);
+  }
+  
+  tr:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
     
 #time_slots{
     display: flex;
