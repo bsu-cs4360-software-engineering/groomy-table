@@ -57,7 +57,7 @@
 
 {% block nav %}
     <li><a href="#">Business</a></li>
-    <li><a href="#">Create Appointment</a></li>
+    <li><a href="{{ url_for('dash.create_appointment') }}">Create Appointment</a></li>
     <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
 {% endblock %}
 
@@ -69,14 +69,14 @@
             {% for appointment in appointments %}
                 <tr class="appointment-row" 
                     data-id="{{ appointment.id }}"
-                    data-client="{{ appointment.client }}"
-                    data-email="{{ appointment.email }}"
-                    data-number="{{ appointment.phone_number if appointment.phone_number else 'No phone number available' }}"
+                    data-client="{{ appointment.customer.client }}"
+                    data-email="{{ appointment.customer.email }}"
+                    data-number="{{ appointment.customer.phone_number if appointment.customer.phone_number else 'No phone number available' }}"
                     data-date="{{ appointment.date }}"
                     data-time="{{ appointment.display_time }}"
-                    data-notes="{{ appointment.notes | map(attribute='content') | join(', ') }}"
-                    data-address="{{ appointment.places[0].address if appointment.places else 'No address available' }}">
-                    <td>{{ appointment.client }}</td>
+                    data-notes="{{ appointment.note_links | map(attribute='note.content') | join(', ') }}"
+                    data-address="{{ appointment.customer.places[0].address if appointment.customer.places else 'No address available' }}">
+                    <td>{{ appointment.customer.client }}</td>
                     <td>{{ appointment.date }}</td>
                     <td>{{ appointment.display_time }}</td>
                 </tr>

@@ -14,16 +14,16 @@
     <h2>Edit Appointment</h2>
     <form method="POST">
         <label for="client">Client:</label>
-        <input type="text" id="client" name="client" value="{{ appointment.client }}" readonly>
+        <input type="text" id="client" name="client" value="{{ appointment.customer.client }}">
 
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email" value="{{ appointment.email }}" readonly>
+        <input type="email" id="email" name="email" value="{{ appointment.customer.email }}">
 
         <label for="number">Number:</label>
-        <input type="tel" id="number" name="number" value="{{ appointment.phone_number if appointment.phone_number else 'No phone number available' }}" readonly>
+        <input type="tel" id="number" name="number" value="{{ appointment.customer.phone_number if appointment.customer.phone_number else 'No phone number available' }}">
 
         <label>Address:</label>
-        <input type="text" id="address" name="address" value="{{ appointment.places[0].address if appointment.places else 'No address available' }}" readonly>
+        <input type="text" id="address" name="address" value="{{ appointment.customer.places[0].address if appointment.customer.places else 'No address available' }}">
 
         <label for="date">Date:</label>
         <input type="date" id="date" name="date" value="{{ appointment.date }}" required>
@@ -32,8 +32,8 @@
         <input type="time" id="time" name="time" value="{{ appointment.time.strftime('%H:%M') }}" required>
 
         <label>Notes:</label>
-        {% for note in appointment.notes %}
-            <textarea name="notes" rows="3" placeholder="Enter note">{{ note.content }}</textarea><br>
+        {% for note in appointment.note_links %}
+            <textarea name="notes" rows="3" placeholder="Enter note">{{ note.note.content }}</textarea><br>
         {% endfor %}
         <textarea name="notes" rows="3" placeholder="New note"></textarea><br>
 

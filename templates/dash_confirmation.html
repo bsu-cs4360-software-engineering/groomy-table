@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block head %}
+    <title>Confirmation - Groomy</title>
+{% endblock %}
+
+{% block nav %}
+    <li><a href="{{ url_for('dash.dashboard') }}">Dashboard</a></li>
+    <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+{% endblock %}
+
+{% block content %}
+    <section>
+        <p>The appointment has been successfully booked.</p>
+        <p>Name: {{ appointment.name }}</p>
+        <p>Date: {{ appointment.date }}</p>
+        <p>Time: {{ appointment.time }}</p>
+    </section>
+{% endblock %}

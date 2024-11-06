@@ -1,12 +1,17 @@
-from flask import Blueprint, jsonify, render_template, request, redirect, url_for
+from flask import Blueprint, jsonify, render_template, request, redirect, session, url_for
 from flask_login import login_required
 from sqlalchemy.orm import joinedload
+from sqlalchemy.exc import SQLAlchemyError
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from database import db
 from models.appointment import Appointment
+from models.customer import Customer
 from models.note import Note
+from models.place import Place
+from models.note_link import NoteLink
+from models.appointment_form import AppointmentForm
 
 dash = Blueprint('dash', __name__)
 
@@ -16,10 +21,12 @@ def dashboard():
     now = datetime.now().date()
 
     appointments = Appointment.query.options(
-        joinedload(Appointment.places),
-        joinedload(Appointment.notes)
+        joinedload(Appointment.customer) # Load the associated customer
+        .joinedload(Customer.places), # Load the Places associated with the Customer
+        joinedload(Appointment.note_links) # Load NoteLinks, which access Notes
     ).filter(Appointment.booked == True).order_by(Appointment.date, Appointment.time).all()
 
+    # Soft delete past appointments
     for appointment in appointments:
         if appointment.date < now:
             appointment.booked = False
@@ -37,8 +44,8 @@ def dashboard():
 @login_required
 def edit_appointment(appointment_id):
     appointment = Appointment.query.options(
-        joinedload(Appointment.places),
-        joinedload(Appointment.notes)
+        joinedload(Appointment.customer).joinedload(Customer.places),
+        joinedload(Appointment.note_links).joinedload(NoteLink.note)
     ).get(appointment_id)
 
     if not appointment:
@@ -52,28 +59,35 @@ def edit_appointment(appointment_id):
         appointment.time = appointment_time
 
         # Get existing notes mapped by their IDs
-        existing_notes = {note.id: note for note in appointment.notes}
+        existing_note_links = {note_link.note.id: note_link for note_link in appointment.note_links}
         submitted_notes = request.form.getlist('notes')
 
-        appointment.notes = []
+        appointment.note_links = []
 
         for note_content in submitted_notes:
             if note_content:
-                if existing_notes:
+                if existing_note_links:
                     # Get the first note ID to update
-                    note_id = list(existing_notes.keys())[0]
-                    note = existing_notes[note_id]
-                    note.content = note_content
-                    appointment.notes.append(note)
-                    existing_notes.pop(note_id)
+                    note_id = list(existing_note_links.keys())[0]
+                    note_link = existing_note_links.pop(note_id)
+                    note_link.note.content = note_content
+                    appointment.note_links.append(note_link)
                 else: # Create new note
                     new_note = Note(
                         content=note_content,
-                        created_by='Admin',
-                        appointment_id=appointment.id
+                        created_by='Admin'
                     )
 
-                    appointment.notes.append(new_note)
+                    db.session.add(new_note)
+                    db.session.commit()
+
+                    new_note_link = NoteLink(
+                        note_id=new_note.id,
+                        appointment_id=appointment.id,
+                        customer_id=appointment.customer.id
+                    )
+
+                    appointment.note_links.append(new_note_link)
 
         db.session.commit()
         return redirect(url_for('dash.dashboard'))
@@ -93,3 +107,109 @@ def delete_appointment(appointment_id):
             return jsonify({'success': True}), 200
         else:
             return jsonify({'error': 'Appointment not found.'}), 404
+        
+@dash.route('/dashboard/create_appointment', methods=['GET', 'POST'])
+@login_required
+def create_appointment():
+    form = AppointmentForm()
+
+    if form.validate_on_submit():
+        if not form.time.data:
+            form.name.errors.append('Select a time.')
+            return render_template('create_appointment.html', form=form)
+        
+        if not _is_valid_date(form.date.data):
+            form.name.errors.append('Select a date between today and a month from now.')
+            return render_template('create_appointment.html', form=form)
+        
+        latitude = request.form.get('latitude')
+        longitude = request.form.get('longitude')
+
+        session['appointment_data'] = {
+            'name': form.name.data,
+            'email': form.email.data,
+            'phone_number': form.phone_number.data,
+            'street_address': form.street_address.data,
+            'date': form.date.data.isoformat(),
+            'time': form.time.data,
+            'notes': form.notes.data,
+            'latitude': latitude,
+            'longitude': longitude
+        }
+
+        return redirect(url_for('dash.confirmation'))
+    
+    return render_template('create_appointment.html', form=form)
+
+@dash.route('/dashboard/confirmation', methods=['GET'])
+@login_required
+def confirmation():
+    appointment_data = session.pop('appointment_data', None)
+
+    if not appointment_data:
+        return redirect(url_for('dash.create_appointment'))
+    
+    appointment_date = datetime.strptime(appointment_data['date'], '%Y-%m-%d').date()
+    appointment_time = datetime.strptime(appointment_data['time'], '%I:%M %p').time()
+
+    try:
+        # Check if customer already exists (based on email)
+        customer = Customer.query.filter_by(email=appointment_data['email']).first()
+
+        if not customer:
+            customer = Customer(
+                client=appointment_data['name'],
+                email=appointment_data['email'],
+                phone_number=appointment_data['phone_number']
+            )
+
+            db.session.add(customer)
+            db.session.commit()
+
+        new_place = Place(
+            address=appointment_data['street_address'],
+            latitude=appointment_data['latitude'],
+            longitude=appointment_data['longitude'],
+            customer_id=customer.id # Associate place with existing/new customer
+        )
+
+        db.session.add(new_place)
+
+        new_appointment = Appointment(
+            customer_id=customer.id,
+            date=appointment_date,
+            time=appointment_time,
+            booked=True
+        )
+
+        db.session.add(new_appointment)
+        db.session.commit()
+
+        if appointment_data['notes']:
+            new_note = Note(
+                content=appointment_data['notes'],
+                created_by=customer.client
+            )
+
+            db.session.add(new_note)
+            db.session.commit()
+
+            note_link = NoteLink(
+                note_id=new_note.id,
+                customer_id=customer.id,
+                appointment_id=new_appointment.id
+            )
+
+            db.session.add(note_link)
+
+        db.session.commit()
+    except SQLAlchemyError as e:
+        db.session.rollback()
+
+    return render_template('dash_confirmation.html', appointment=appointment_data)
+
+def _is_valid_date(selected_date):
+    today = datetime.today().date()
+    min_date = today + timedelta(days=1)
+    max_date = today + timedelta(days=30)
+    return min_date <= selected_date <= max_date
