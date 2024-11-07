@@ -38,7 +38,63 @@ def dashboard():
     for appointment in valid_appointments:
         appointment.display_time = appointment.time.strftime('%I:%M %p')
 
-    return render_template('dash.html', appointments=valid_appointments)
+    appointments_today = len([appt for appt in valid_appointments if appt.date == now])
+
+    customers = Customer.query.options(
+        joinedload(Customer.places)
+    ).all()
+
+    return render_template('dash.html',
+                            appointments=valid_appointments,
+                            appointments_today=appointments_today,
+                            customers=customers)
+
+@dash.route('/dashboard/edit_customer/<int:customer_id>', methods=['GET', 'POST'])
+@login_required
+def edit_customer(customer_id):
+    customer = Customer.query.options(
+        joinedload(Customer.places),
+        joinedload(Customer.note_links).joinedload(NoteLink.note)
+    ).get(customer_id)
+
+    if not customer:
+        return "Customer not found", 404
+    
+    if request.method == 'POST':
+        existing_note_links = {note_link.note.id: note_link for note_link in customer.note_links}
+        submitted_notes = request.form.getlist('notes')
+
+        customer.note_links = []
+
+        for note_content in submitted_notes:
+            if note_content:
+                if existing_note_links:
+                    # Get the first note ID to update
+                    note_id = list(existing_note_links.keys())[0]
+                    note_link = existing_note_links.pop(note_id)
+                    note_link.note.content = note_content
+                    customer.note_links.append(note_link)
+                else: # Create new note
+                    new_note = Note(
+                        content=note_content,
+                        created_by='Admin'
+                    )
+
+                    db.session.add(new_note)
+                    db.session.commit()
+
+                    new_note_link = NoteLink(
+                        note_id=new_note.id,
+                        appointment_id=None,
+                        customer_id=customer.id
+                    )
+
+                    customer.note_links.append(new_note_link)
+
+        db.session.commit()
+        return redirect(url_for('dash.dashboard'))
+    
+    return render_template('edit_customer.html', customer=customer)
 
 @dash.route('/dashboard/edit_appointment/<int:appointment_id>', methods=['GET', 'POST'])
 @login_required
@@ -84,7 +140,7 @@ def edit_appointment(appointment_id):
                     new_note_link = NoteLink(
                         note_id=new_note.id,
                         appointment_id=appointment.id,
-                        customer_id=appointment.customer.id
+                        customer_id=None
                     )
 
                     appointment.note_links.append(new_note_link)
@@ -158,7 +214,7 @@ def confirmation():
 
         if not customer:
             customer = Customer(
-                client=appointment_data['name'],
+                name=appointment_data['name'],
                 email=appointment_data['email'],
                 phone_number=appointment_data['phone_number']
             )
@@ -188,7 +244,7 @@ def confirmation():
         if appointment_data['notes']:
             new_note = Note(
                 content=appointment_data['notes'],
-                created_by=customer.client
+                created_by=customer.name
             )
 
             db.session.add(new_note)

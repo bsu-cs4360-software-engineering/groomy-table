@@ -112,7 +112,7 @@ def confirmation():
 
         if not customer:
             customer = Customer(
-                client=appointment_data['name'],
+                name=appointment_data['name'],
                 email=appointment_data['email'],
                 phone_number=appointment_data['phone_number']
             )
@@ -142,7 +142,7 @@ def confirmation():
         if appointment_data['notes']:
             new_note = Note(
                 content=appointment_data['notes'],
-                created_by=customer.client
+                created_by=customer.name
             )
 
             db.session.add(new_note)
@@ -150,7 +150,7 @@ def confirmation():
 
             note_link = NoteLink(
                 note_id=new_note.id,
-                customer_id=customer.id,
+                customer_id=None,
                 appointment_id=new_appointment.id
             )
 
