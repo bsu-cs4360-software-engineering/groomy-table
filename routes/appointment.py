@@ -1,26 +1,18 @@
 import stripe
+from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
-from flask_wtf import FlaskForm
-from wtforms import StringField, EmailField, DateField, HiddenField, TextAreaField, TelField
-from wtforms.validators import DataRequired, Optional, Email
 
 from datetime import datetime, time, timedelta
 
 from database import db
 from models.appointment import Appointment
+from models.customer import Customer
 from models.place import Place
 from models.note import Note
+from models.note_link import NoteLink
+from models.appointment_form import AppointmentForm
 
 appts = Blueprint('appts', __name__)
-
-class AppointmentForm(FlaskForm):
-    name = StringField('Full Name', validators=[DataRequired()])
-    email = EmailField('Email', validators=[DataRequired(), Email()])
-    phone_number = TelField('Phone Number', validators=[Optional()])
-    street_address = StringField('Street Address', validators=[DataRequired()])
-    date = DateField('Select Date', format='%Y-%m-%d', validators=[DataRequired()])
-    time = HiddenField('Appointment Time', validators=[DataRequired()])
-    notes = TextAreaField('Notes', validators=[Optional()])
 
 @appts.route('/appointments', methods=['GET', 'POST'])
 def appointments():
@@ -114,32 +106,59 @@ def confirmation():
     appointment_date = datetime.strptime(appointment_data['date'], '%Y-%m-%d').date()
     appointment_time = datetime.strptime(appointment_data['time'], '%I:%M %p').time()
 
-    new_place = Place(
-        address=appointment_data['street_address'],
-        latitude=appointment_data['latitude'],
-        longitude=appointment_data['longitude']
-    )
+    try:
+        # Check if customer already exists (based on email)
+        customer = Customer.query.filter_by(email=appointment_data['email']).first()
 
-    new_appointment = Appointment(
-        client=appointment_data['name'],
-        email=appointment_data['email'],
-        phone_number=appointment_data['phone_number'],
-        date=appointment_date,
-        time=appointment_time,
-        booked=True,
-        places=[new_place]
-    )
+        if not customer:
+            customer = Customer(
+                name=appointment_data['name'],
+                email=appointment_data['email'],
+                phone_number=appointment_data['phone_number']
+            )
 
-    if appointment_data['notes']:
-        new_note = Note(
-            content=appointment_data['notes'],
-            created_by=new_appointment.client
+            db.session.add(customer)
+            db.session.commit()
+
+        new_place = Place(
+            address=appointment_data['street_address'],
+            latitude=appointment_data['latitude'],
+            longitude=appointment_data['longitude'],
+            customer_id=customer.id # Associate place with existing/new customer
         )
 
-        new_appointment.notes.append(new_note)
+        db.session.add(new_place)
 
-    db.session.add(new_appointment)
-    db.session.commit()
+        new_appointment = Appointment(
+            customer_id=customer.id,
+            date=appointment_date,
+            time=appointment_time,
+            booked=True
+        )
+
+        db.session.add(new_appointment)
+        db.session.commit()
+
+        if appointment_data['notes']:
+            new_note = Note(
+                content=appointment_data['notes'],
+                created_by=customer.name
+            )
+
+            db.session.add(new_note)
+            db.session.commit()
+
+            note_link = NoteLink(
+                note_id=new_note.id,
+                customer_id=None,
+                appointment_id=new_appointment.id
+            )
+
+            db.session.add(note_link)
+
+        db.session.commit()
+    except SQLAlchemyError as e:
+        db.session.rollback()
 
     return render_template('confirmation.html', appointment=appointment_data)
 

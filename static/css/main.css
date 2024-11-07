@@ -34,18 +34,6 @@ main {
     flex: 1;
 }
 
-a {
-    text-decoration: none;
-}
-
-a:visited {
-    color: var(--black);
-}
-
-a.active {
-    color: var(--highlight);
-}
-
 ul,
 ol {
     list-style: none;
@@ -110,6 +98,7 @@ form input, textarea{
 
 form textarea{
     max-width: 200px;
+    min-height: 100px;
     padding: 10px;
     align-self: center;
 }
@@ -126,6 +115,30 @@ button {
     color: var(--black);
     align-self: center;
 }
+table {
+    border-collapse: collapse;
+    background: var(--grey-background);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+  }
+  
+  th,td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--grey-background);
+    color: var(--black);
+  }
+  
+  th {
+    background-color: var(--grey-background);
+    font-weight: bold;
+    color: var(--black);
+  }
+  
+  
     
 #time_slots{
     display: flex;
@@ -158,6 +171,18 @@ h1{
     text-align: center;
 }
 
+a {
+    text-decoration: none;
+}
+
+a:visited {
+    color: var(--black);
+}
+
+a.active {
+    color: var(--highlight);
+}
+
 nav {
     margin: 27px auto 0;
     position: relative;
@@ -182,7 +207,7 @@ nav ul {
     width: 100%;
 }
 
-nav ul:empty{
+nav ul:empty {
     display: none;
 }
 
@@ -205,14 +230,14 @@ nav a {
     color: var(--black);
 }
 
-a:hover,
-nav a:hover,
-nav a.active:hover {
+a:hover, nav a:hover, nav a.active:hover {
     color: var(--highlight);
 }
+nav a:hover{
+    background-color: var(--dark-grey-background);
+    border-radius: var(--border-radius);
+}
 
-a:active,
-nav a:active,
-nav a.active:active {
+a:active, nav a:active, nav a.active:active {
     color: var(--primary);
 }

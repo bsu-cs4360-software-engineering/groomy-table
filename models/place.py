@@ -7,6 +7,6 @@ class Place(db.Model):
     address = db.Column(db.String(255), nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
-    appointment_id = db.Column(db.Integer, db.ForeignKey('appointments.id'))
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'))
     
-    appointment = db.relationship('Appointment', back_populates='places')
+    customer = db.relationship('Customer', back_populates='places')

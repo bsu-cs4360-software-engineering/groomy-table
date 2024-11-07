@@ -2,11 +2,6 @@
 {% block head %}
     <title>Dashboard - Groomy</title>
     <style>
-        table {
-            border: 2px solid var(--black);
-            border-collapse: collapse;
-        }
-
         tr {
             cursor: pointer;
         }
@@ -15,7 +10,7 @@
             background: var(--grey-background);
         }
 
-        tr:hover {
+        tr:hover td {
             color: var(--primary);
         }
 
@@ -52,48 +47,84 @@
             align-items: center;
             justify-content: space-between;
         }
+
+        .appt-cust-container {
+            display: flex;
+            column-gap: 100px;
+        }
+
+        .customers,
+        .appointments {
+            text-align: center;
+        }
     </style>
 {% endblock %}
 
 {% block nav %}
     <li><a href="#">Business</a></li>
-    <li><a href="#">Create Appointment</a></li>
+    <li><a href="{{ url_for('dash.create_appointment') }}">Create Appointment</a></li>
     <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
 {% endblock %}
 
 {% block content %}
 <section>
-    {% if appointments %}
-        <table>
-            <tbody>
-            {% for appointment in appointments %}
-                <tr class="appointment-row" 
-                    data-id="{{ appointment.id }}"
-                    data-client="{{ appointment.client }}"
-                    data-email="{{ appointment.email }}"
-                    data-number="{{ appointment.phone_number if appointment.phone_number else 'No phone number available' }}"
-                    data-date="{{ appointment.date }}"
-                    data-time="{{ appointment.display_time }}"
-                    data-notes="{{ appointment.notes | map(attribute='content') | join(', ') }}"
-                    data-address="{{ appointment.places[0].address if appointment.places else 'No address available' }}">
-                    <td>{{ appointment.client }}</td>
-                    <td>{{ appointment.date }}</td>
-                    <td>{{ appointment.display_time }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <div class="empty-msg" style="text-align: center;">
-            No appointments available.
+    <div>
+        <h1 style="padding: 0">{{ appointments_today }}</h1>
+        <h3>Appointments Today</h3>
+    </div>
+    <div class="appt-cust-container">
+        <div class="appointments">
+        {% if appointments %}
+            <h3>Appointments</h3>
+            <table>
+                <tbody>
+                {% for appointment in appointments %}
+                    <tr class="appointment-row" 
+                        data-id="{{ appointment.id }}"
+                        data-name="{{ appointment.customer.name }}"
+                        data-email="{{ appointment.customer.email }}"
+                        data-number="{{ appointment.customer.phone_number if appointment.customer.phone_number else 'No phone number available' }}"
+                        data-date="{{ appointment.date }}"
+                        data-time="{{ appointment.display_time }}"
+                        data-notes="{{ appointment.note_links | map(attribute='note.content') | join(', ') }}"
+                        data-address="{{ appointment.customer.places[0].address if appointment.customer.places else 'No address available' }}">
+                        <td>{{ appointment.customer.name }}</td>
+                        <td>{{ appointment.date }}</td>
+                        <td>{{ appointment.display_time }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-msg" style="text-align: center;">
+                No appointments available.
+            </div>
+        {% endif %}
         </div>
-    {% endif %}
+        <div class="customers">
+            <h3>Customers</h3>
+            <table>
+                <tbody>
+                    {% for customer in customers %}
+                        <tr class="customer-row"
+                            data-id="{{ customer.id }}"
+                            data-name="{{ customer.name }}"
+                            data-email="{{ customer.email }}"
+                            data-number="{{ customer.phone_number if customer.phone_number else 'No phone number available' }}"
+                            data-address="{{ customer.places[0].address if customer.places else 'No addresss available' }}">
+                            <td>{{ customer.name }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    <div class="modal" id="appointment-modal" tabindex="-1" role="dialog">
+    <div class="modal" id="details-modal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4>Appointment Details</h4>
+                    <h4 id="modal-title">Details</h4>
                     <div>
                         <button type="button" class="edit" id="edit-button">Edit</button>
                         <button type="button" class="delete" id="delete-button">Delete</button>
@@ -103,7 +134,7 @@
                     </div>
                 </div>
                 <div class="modal-body">
-                    <p id="appointment-details"></p>
+                    <p id="modal-details"></p>
                 </div>
             </div>
         </div>
@@ -111,17 +142,23 @@
 </section>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const rows = document.querySelectorAll('.appointment-row');
-        const modal = document.getElementById('appointment-modal');
-        const apptDetails = document.getElementById('appointment-details');
+        const apptRows = document.querySelectorAll('.appointment-row');
+        const custRows = document.querySelectorAll('.customer-row');
+        const modal = document.getElementById('details-modal');
+        const title = document.getElementById('modal-title');
+        const modalDetails = document.getElementById('modal-details');
         const editButton = document.getElementById('edit-button');
         const deleteButton = document.getElementById('delete-button');
 
-        let currentAppointmentId = null;
+        let currentId = null;
+        let currentType = null;
 
-        rows.forEach(row => {
+        apptRows.forEach(row => {
             row.addEventListener('click', function() {
-                const client = this.dataset.client;
+                currentType = 'appointment';
+                currentId = this.dataset.id;
+
+                const name = this.dataset.name;
                 const email = this.dataset.email;
                 const number = this.dataset.number;
                 const address = this.dataset.address;
@@ -130,7 +167,7 @@
                 const notes = this.dataset.notes;
 
                 const details = `
-                    Client: ${client}<br>
+                    Client: ${name}<br>
                     Email: ${email}<br>
                     Number: ${number}<br>
                     Address: ${address}<br>
@@ -139,47 +176,79 @@
                     Notes: ${notes}
                 `;
 
-                apptDetails.innerHTML = details;
-                currentAppointmentId = this.dataset.id;
+                title.innerHTML = 'Appointment Details';
+                modalDetails.innerHTML = details;
                 modal.style.display = 'block';
+
+                deleteButton.style.display = 'inline-block';
+            });
+        });
+
+        custRows.forEach(row => {
+            row.addEventListener('click', function() {
+                currentType = 'customer';
+                currentId = this.dataset.id;
+
+                const name = this.dataset.name;
+                const email = this.dataset.email;
+                const number = this.dataset.number;
+                const address = this.dataset.address;
+
+                const details = `
+                    Name: ${name}<br>
+                    Email: ${email}<br>
+                    Number: ${number}<br>
+                    Address: ${address}
+                `;
+
+                title.innerHTML = 'Customer Details';
+                modalDetails.innerHTML = details;
+                modal.style.display = 'block';
+
+                deleteButton.style.display = 'none';
             });
         });
 
         editButton.addEventListener('click', function() {
-            if (currentAppointmentId) {
-                // Redirect to the edit page with the appointment ID
-                window.location.href = `dashboard/edit_appointment/${currentAppointmentId}`;
+            if (currentId) {
+                if (currentType == 'appointment') {
+                    window.location.href = `dashboard/edit_appointment/${currentId}`;
+                } else if (currentType == 'customer') {
+                    window.location.href = `dashboard/edit_customer/${currentId}`;
+                } 
             }
         });
 
         deleteButton.addEventListener('click', function() {
-            const confirmation = confirm("Are you sure you want to delete this appointment?");
-            if (confirmation && currentAppointmentId) {
-                // Make an AJAX request to delete the appointment
-                fetch(`/dashboard/delete_appointment/${currentAppointmentId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ booked: false })
-                })
-                .then(response => {
-                    if (response.ok) {
-                        location.reload();  // Reload the page to reflect changes
-                    } else {
-                        alert('Failed to delete the appointment. Please try again.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred. Please try again.');
-                });
+            if (currentType === 'appointment' && currentId) {
+                const confirmation = confirm("Are you sure you want to delete this appointment?");
+                if (confirmation) {
+                    // Make an AJAX request to delete the appointment
+                    fetch(`/dashboard/delete_appointment/${currentId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ booked: false })
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            location.reload();  // Reload the page to reflect changes
+                        } else {
+                            alert('Failed to delete the appointment. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    });
+                }
             }
         });
     });
 
     function closeModal() {
-        document.getElementById('appointment-modal').style.display = 'none';
+        document.getElementById('details-modal').style.display = 'none';
     }
 </script>
 {% endblock %}
