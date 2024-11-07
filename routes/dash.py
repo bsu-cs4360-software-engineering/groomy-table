@@ -163,7 +163,33 @@ def delete_appointment(appointment_id):
             return jsonify({'success': True}), 200
         else:
             return jsonify({'error': 'Appointment not found.'}), 404
-        
+
+@dash.route('/dashboard/search_customer')
+@login_required
+def search_customer():
+    query = request.args.get('query', '').lower()
+
+    if not query:
+        return jsonify({'customers': []})
+    
+    # Find customers whose name contains the query (case-insensitive)
+    customers = Customer.query.filter(Customer.name.ilike(f'%{query}%')).all()
+
+    customer_data = []
+
+    for customer in customers:
+        customer_data.append({
+            'id': customer.id,
+            'name': customer.name,
+            'email': customer.email,
+            'phone_number': customer.phone_number if customer.phone_number else '',
+            'street_address': customer.places[0].address if customer.places else '',
+            'latitude': customer.places[0].latitude if customer.places else '',
+            'longitude': customer.places[0].longitude if customer.places else ''
+        })
+
+    return jsonify({'customers': customer_data})
+
 @dash.route('/dashboard/create_appointment', methods=['GET', 'POST'])
 @login_required
 def create_appointment():

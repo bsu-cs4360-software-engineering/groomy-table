@@ -42,6 +42,25 @@
             column-gap: 20px;
             align-items: flex-start;
         }
+
+        .suggestion-list {
+            border: 1px solid #ccc;
+            max-height: 200px;
+            overflow-y: auto;
+            background: #fff;
+            position: absolute;
+            z-index: 9999;
+            width: 100%;
+            border-radius: var(--border-radius);
+            top: 100%;
+        }
+        .suggestion-item {
+            padding: 5px;
+            cursor: pointer;
+        }
+        .suggestion-item:hover {
+            background-color: #f1f1f1;
+        }
     </style>
 {% endblock %}
 
@@ -57,8 +76,12 @@
             <form id="booking_form" method="post" action="{{ url_for('dash.create_appointment') }}">
                 {{ form.hidden_tag() }} <!-- CSRF protection -->
 
-                <label for="name">Full Name:</label>
-                {{ form.name(size=32) }}
+                <div style="display: flex; flex-direction: column; position: relative">
+                    <label for="name">Full Name:</label>
+                    {{ form.name(size=32) }}
+                    <!-- Autocomplete suggestions -->
+                    <div id="suggestions" class="suggestion-list" style="display: none;"></div>
+                </div>
 
                 <label for="email">Email:</label>
                 {{ form.email(size=32) }}
@@ -84,6 +107,56 @@
         </div>
     </section>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle customer search and autofill
+            const nameInput = document.getElementById('name');
+            const suggestionsDiv = document.getElementById('suggestions');
+            
+            nameInput.addEventListener('input', function() {
+                const query = nameInput.value.trim();
+                if (query.length > 1) {
+                    fetch(`/dashboard/search_customer?query=${query}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.customers.length > 0) {
+                                suggestionsDiv.innerHTML = ''; // Clear previous suggestions
+                                data.customers.forEach(customer => {
+                                    const div = document.createElement('div');
+                                    div.classList.add('suggestion-item');
+                                    div.textContent = customer.name;
+                                    div.addEventListener('click', function() {
+                                        // Autofill the fields with customer data
+                                        nameInput.value = customer.name;
+                                        document.getElementById('email').value = customer.email;
+                                        document.getElementById('phone_number').value = customer.phone_number || '';
+                                        document.getElementById('street_address').value = customer.street_address || '';
+                                        document.getElementById('latitude').value = customer.latitude || '';
+                                        document.getElementById('longitude').value = customer.longitude || '';
+                                        suggestionsDiv.style.display = 'none'; // Hide suggestions
+                                    });
+                                    suggestionsDiv.appendChild(div);
+                                });
+                                suggestionsDiv.style.display = 'block'; // Show suggestions
+                            } else {
+                                suggestionsDiv.style.display = 'none'; // No results, hide suggestions
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching customers:', error);
+                        });
+                } else {
+                    suggestionsDiv.style.display = 'none'; // Hide suggestions if input is too short
+                }
+            });
+
+            // Close suggestions if user clicks outside the input or suggestions
+            document.addEventListener('click', function(event) {
+                if (!nameInput.contains(event.target) && !suggestionsDiv.contains(event.target)) {
+                    suggestionsDiv.style.display = 'none';
+                }
+            });
+        });
+
         // Google Places Autocomplete
         function initAutocomplete() {
             const input = document.getElementById('street_address');
