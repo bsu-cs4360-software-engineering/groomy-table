@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash
 
 from database import db
 from models.user import User
+from models.password import UserPass
 
 new_acc = Blueprint('new_acc', __name__)
 
@@ -29,13 +30,18 @@ def create_user():
         elif _passwords_match(form.password.data, form.confirm_password.data) == False:
             form.username.errors.append("Passwords do not match.")
         else:
+            new_pass = UserPass(password_hash=generate_password_hash(form.password.data))
+            db.session.add(new_pass)
+            db.session.flush()
+
             new_user = User(
-                username = form.username.data,
-                email    = form.email.data,
-                password = generate_password_hash(form.password.data)
+                username    = form.username.data,
+                email       = form.email.data,
+                password_id = new_pass.id
             )
 
             db.session.add(new_user)
+            db.session.add(new_pass)
             db.session.commit()
             return redirect(url_for('auth.login'))
             
