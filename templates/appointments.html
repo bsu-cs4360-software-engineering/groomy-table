@@ -54,37 +54,78 @@
 
 {% block content %}
     <section>
-        <h2>Contact Information</h2>
+        <div class="calendar-container">
+            <div class="calendar-base">
+                <div class="year"></div>
+                <div class="triangle-left"></div>
+                <div class="triangle-right"></div>
+                <div class="months">
+                    <span class="month">Jan</span>
+                    <span class="month">Feb</span>
+                    <span class="month">Mar</span>
+                    <span class="month">Apr</span>
+                    <span class="month">May</span>
+                    <span class="month">Jun</span>
+                    <span class="month">Jul</span>
+                    <span class="month">Aug</span>
+                    <span class="month">Sep</span>
+                    <span class="month">Oct</span>
+                    <span class="month">Nov</span>
+                    <span class="month">Dec</span>
+                </div>
+                <hr class="month-spacer">
+                <div class="days">SUN MON TUE WED THU FRI SAT</div>
+                <div class="num-dates"></div>
+            </div>
+            <div class="calendar-left">
+                <div class="hamburger">
+                    <div class="burger-line"></div>
+                    <div class="burger-line"></div>
+                    <div class="burger-line"></div>
+                </div>
+                <div class="num-date"></div>
+                <div class="num-date-day"></div>
+            </div>
+        </div>
+        <h2>Book Your Appointment</h2>
         <div class="form-container">
             <form id="booking_form" method="post" action="{{ url_for('appts.appointments') }}">
-                {{ form.hidden_tag() }} <!-- CSRF protection -->
-
-                <label for="name">Full Name:</label>
-                {{ form.name(size=32) }}
-
-                <label for="email">Email:</label>
-                {{ form.email(size=32) }}
-
-                <label for="phone_number">Phone Number:</label>
-                {{ form.phone_number(size=32, pattern='[0-9]{3}-[0-9]{3}-[0-9]{4}', placeholder='123-456-7890') }}
-
-                <label for="street_address">Street Address:</label>
-                {{ form.street_address(size=32, id='street_address') }}
-
+                
+                {{ form.hidden_tag() }} <!-- CSRF protection -->               
+                <div class="form-group">
+                    <label for="name">Full Name:</label>
+                    {{ form.name(size=32) }}
+                </div>                
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    {{ form.email(size=32) }}
+                </div>                
+                <div class="form-group">
+                    <label for="phone_number">Phone Number:</label>
+                    {{ form.phone_number(size=32, pattern='[0-9]{3}-[0-9]{3}-[0-9]{4}', placeholder='123-456-7890') }}
+                </div>
+                <div class="form-group">
+                    <label for="street_address">Street Address:</label>
+                    {{ form.street_address(size=32, id='street_address') }}
+                </div>                
                 <input type="hidden" id="latitude" name="latitude">
                 <input type="hidden" id="longitude" name="longitude">
-
-                <label for="date">Select Date:</label>
-                {{ form.date() }}
-
-                <label for="notes">Notes:</label>
-                {{ form.notes(size=32) }}
-
-                <button type="submit" id="submit">Proceed to Payment</button>
+                <div class="form-group">
+                    <label for="date">Select Date:</label>
+                    {{ form.date() }}
+                </div>
+                <di class="form-group">
+                    <label for="notes">Notes:</label>
+                    {{ form.notes(size=32) }}
+                </div>
+                <div>
+                    <button type="submit" id="submit">Proceed to Payment</button>
+                </div>
             </form>
             <div id="time_slots"></div>
         </div>
     </section>
+    <script src="{{ url_for('static', filename='js/calendar.js') }}"></script>
     <script>
         // Google Places Autocomplete
         function initAutocomplete() {
@@ -156,7 +197,7 @@
         
         window.onload = function() {
             setDateLimits();
-            initAutocomplete();
+            // initAutocomplete();
 
             document.getElementById('date').addEventListener('change', function() {
                 const selectedDate = this.value;
