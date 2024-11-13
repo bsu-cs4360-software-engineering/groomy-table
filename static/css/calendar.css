@@ -74,12 +74,12 @@
 }
 
 .month:not(.inactive):hover {
-    color: #27e879;
+    color: #9760ce;
     cursor: pointer;
 }
 
 .month.active {
-    color: #27ae60;
+    color: #7d2ecc;
 }
 
 .month-spacer {
