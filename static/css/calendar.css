@@ -1,24 +1,31 @@
 :root {
     --week-margin: 25px;
+    --clear-border: 1px solid rgba(255, 255, 255, 0.3);
+    --border-radius: 20px;
+    --grey-background: rgba(145, 141, 141, 0.1);
+    --dark-grey-background: #dfdddd;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .calendar-container {
     font-family: 'Kanit', sans-serif;
     max-height: 500px;
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
 }
 
 .calendar-base {
     width: 900px;
     height: 500px;
-    border-radius: 20px;
-    background-color: #fff;
+    border-radius: var(--border-radius);
+    background-color: var(--grey-background);
     position: relative;
     z-index: 1;
     color: #000;
 }
 
 .year {
-    color: #e8e8e8;
+    color: #000000;
     font-size: 30px;
     float: right;
     position: relative;
@@ -31,7 +38,7 @@
     width: 0;
     height: 0;
     border-top: 5px solid transparent;
-    border-right: 10px solid #e8e8e8;
+    border-right: 10px solid #000000;
     border-bottom: 5px solid transparent;
     float: right;
     position: relative;
@@ -43,7 +50,7 @@
     width: 0;
     height: 0;
     border-top: 5px solid transparent;
-    border-left: 10px solid #e8e8e8;
+    border-left: 10px solid #000000;
     border-bottom: 5px solid transparent;
     float: right;
     position: relative;
@@ -83,7 +90,7 @@
 }
 
 .month-spacer {
-    border-color: #e8e8e8;
+    border-color: #000000;
     position: relative;
     margin: revert;
     top: 85px;
@@ -124,7 +131,7 @@
 }
 
 .day.active {
-    border-radius: 25%;
+    border-radius: var(--border-radius);
     background-color: #7d2ecc;
     position: relative;
     color: #fff;
@@ -159,7 +166,7 @@
     width: 25px;
     height: 3px;
     background-color: #fff;
-    border-radius: 15%;
+    border-radius: var(--border-radius);
     margin-bottom: 3px;
 }
 
