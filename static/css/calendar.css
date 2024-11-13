@@ -52,11 +52,11 @@
 }
 
 .triangle-left:hover {
-    border-right: 10px solid #2ecc71;
+    border-right: 10px solid #7d2ecc;
 }
 
 .triangle-right:hover {
-    border-left: 10px solid #2ecc71;
+    border-left: 10px solid #7d2ecc;
 }
 
 .months,
@@ -125,7 +125,7 @@
 
 .day.active {
     border-radius: 25%;
-    background-color: #2ecc71;
+    background-color: #7d2ecc;
     position: relative;
     color: #fff;
 }
@@ -142,7 +142,7 @@
     width: 300px;
     height: 500px;
     border-radius: 20px 0 0 20px;
-    background-color: #2ecc71;
+    background-color: #7d2ecc;
     position: relative;
     z-index: 3;
     bottom: 500px;
