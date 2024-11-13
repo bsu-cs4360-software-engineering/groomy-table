@@ -22,6 +22,9 @@
     position: relative;
     z-index: 1;
     color: #000;
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+    
 }
 
 .year {
@@ -166,7 +169,7 @@
     width: 25px;
     height: 3px;
     background-color: #fff;
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius)git ;
     margin-bottom: 3px;
 }
 
