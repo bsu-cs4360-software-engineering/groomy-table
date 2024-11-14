@@ -24,10 +24,10 @@ def login():
         user_username = User.query.filter_by(username=username_or_email).first()
         user_email = User.query.filter_by(email=username_or_email).first()
 
-        if user_username and check_password_hash(user_username.password, password):
+        if user_username and check_password_hash(user_username.password.password_hash, password):
             login_user(user_username)
             return redirect(url_for('dash.dashboard'))
-        elif user_email and check_password_hash(user_email.password, password):
+        elif user_email and check_password_hash(user_email.password.password_hash, password):
             login_user(user_email)
             return redirect(url_for('dash.dashboard'))
         else:
