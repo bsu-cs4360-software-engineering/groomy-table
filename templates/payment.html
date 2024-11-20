@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
+
 {% block head %}
     <title>Book Your Appointment - Groomy</title>
+    <!-- Stripe.js Library -->
     <script src="https://js.stripe.com/v3/"></script>
 {% endblock %}
 
@@ -12,50 +14,69 @@
 {% endblock %}
 
 {% block content %}
-    <section>
-        <h2>Payment Method</h2>
-        <form id="payment_form" method="post">
-            <div id="payment_error"></div>
-            <div id="card-element"></div>
-            <button type="submit">Book Appointment</button>
-        </form>
+    <section class="container">
         <h2>Review Your Appointment Details</h2>
-        <p>Name: {{ appointment_data.name }}</p>
-        <p>Email: {{ appointment_data.email }}</p>
-        <p>Phone: {{ appointment_data.phone_number }}</p>
-        <p>Address: {{ appointment_data.street_address }}</p>
-        <p>Date: {{ appointment_data.date }}</p>
-        <p>Time: {{ appointment_data.time }}</p>
-        <p>Notes: {{ appointment_data.notes }}</p>
+        <p><strong>Name:</strong> {{ appointment_data.name }}</p>
+        <p><strong>Email:</strong> {{ appointment_data.email }}</p>
+        <p><strong>Phone:</strong> {{ appointment_data.phone_number }}</p>
+        <p><strong>Address:</strong> {{ appointment_data.street_address }}</p>
+        <p><strong>Date:</strong> {{ appointment_data.date }}</p>
+        <p><strong>Time:</strong> {{ appointment_data.time }}</p>
+        <p><strong>Notes:</strong> {{ appointment_data.notes }}</p>
     </section>
+
+    <!-- Payment Form -->
+    <form id="payment_form" method="post">
+        <div id="payment_error"></div> <!-- Error message display -->
+        
+        <!-- Stripe Card Input Element -->
+        <div id="card-element" class="StripeElement">
+            <!-- A Stripe Element will be inserted here. -->
+        </div>
+
+        <!-- Any errors related to card input will be shown here -->
+        <div id="card-errors" role="alert"></div>
+
+        <button type="submit">Book Appointment</button>
+    </form>
+
     <script>
+        // Initialize Stripe
         const stripe = Stripe('pk_test_51QDTQWJi74T5Aw7FKv8OFdXH8y1XC70ieQkvqsAVbq2gD5hB23VAxFvdyAJllZKTvlLh6ihO38D6l79em9HeyodJ00WgtKXJ8e');
         const elements = stripe.elements();
+
+        // Create a Stripe card element
         const cardElement = elements.create('card');
+
+        // Mount the card element to the DOM
         cardElement.mount('#card-element');
 
+        // Handle form submission
         document.getElementById('payment_form').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const {token, error} = await stripe.createToken(cardElement);
+            event.preventDefault();  // Prevent the default form submission behavior
+
+            // Create a token with the card element
+            const { token, error } = await stripe.createToken(cardElement);
 
             if (error) {
+                // If there's an error, display it to the user
                 document.getElementById('payment_error').innerText = error.message;
             } else {
+                // If successful, send the token to the server
                 const response = await fetch('/payment', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({token: token.id})
+                    body: JSON.stringify({ token: token.id })  // Send the token in the request body
                 });
 
                 const result = await response.json();
 
                 if (result.redirect_url) {
-                    window.location.href = result.redirect_url;
+                    window.location.href = result.redirect_url;  // Redirect to the provided URL
                 } else {
-                    const result = await response.json();
-                    document.getElementById('payment_error').innerText = result.message;
+                    document.getElementById('payment_error').innerText = result.message;  // Display any error message
                 }
             }
         });

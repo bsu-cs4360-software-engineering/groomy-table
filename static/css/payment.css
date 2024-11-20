@@ -1,0 +1,154 @@
+:root {
+  --primary: #7d2ecc;
+  --highlight: #9760ce;
+  --black: #101010;
+  --background: #fcfcfc;
+
+  --clear-border: 1px solid rgba(255, 255, 255, 0.3);
+  --border-radius: 20px;
+  --grey-background: rgba(145, 141, 141, 0.1);
+  --dark-grey-background: #dfdddd;
+  --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Payment Form */
+#payment_form {
+  background: var(--grey-background);
+  backdrop-filter: blur(35px);
+  border-radius: var(--border-radius);
+  border: var(--clear-border);
+  box-shadow: var(--box-shadow);
+  padding: 30px;
+  position: relative;
+  margin-top: 50px;
+  width: 100%;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+/* Error Message Styling */
+#payment_error {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* Card Element Styling */
+#card-element {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  font-size: 18px;
+  border-radius: var(--border-radius);
+  margin-bottom: 20px;
+  width: 100%;
+  transition: border-color 0.3s ease;
+}
+
+/* Focus State Styling for Card Input */
+#card-element.StripeElement--focus {
+  border-color: #ffffff; /* White border on focus */
+}
+
+/* Input Placeholder Styling */
+input::placeholder {
+  color: #b5b5b5;
+  /* font-family: 'Space Mono', monospace; */
+}
+
+/* Submit Button Styling */
+#payment_form button {
+  background-color: var(--primary);
+  color: var(--background);
+  font-size: 15px;
+  padding: 10px 0;
+  width: 100%;
+  border: var(--clear-border);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  /* font-family: 'Space Mono', monospace; */
+}
+
+/* Button Hover Effect */
+#payment_form button:hover {
+  background-color: var(--highlight);
+}
+
+/* Mobile-Friendly Adjustments */
+@media (max-width: 768px) {
+  #payment_form {
+    padding: 20px;
+    width: 90%;
+  }
+
+  #payment_form h2 {
+    font-size: 22px;
+  }
+
+  #card-element {
+    padding: 12px;
+  }
+
+  #payment_form button {
+    padding: 12px 0;
+  }
+}
+
+/* Card Input Styling */
+input[id="card-number"], input[id="card-name"], input[id="card-exp"], input[id="card-ccv"] {
+  font-size: 16px;
+  /* font-family: 'Space Mono', monospace; */
+  color: white;
+  background: transparent;
+  border: var(--clear-border);
+  border-bottom: 2px solid #fff;
+  padding: 8px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+input[id="card-number"]:focus,
+input[id="card-name"]:focus,
+input[id="card-exp"]:focus,
+input[id="card-ccv"]:focus {
+  border-bottom: 2px solid #28a745;
+  outline: none;
+}
+
+input[id="card-number"]:hover,
+input[id="card-name"]:hover,
+input[id="card-exp"]:hover,
+input[id="card-ccv"]:hover {
+  border-bottom: 2px solid #28a745;
+}
+
+/* Label Styling */
+label {
+  color: white;
+  font-size: 12px;
+  /* font-family: 'Space Mono', monospace; */
+  padding-bottom: 5px;
+  display: block;
+}
+
+
+.stripe-field {
+  margin-bottom: 15px;
+}
+
+.StripeElement {
+  background-color: rgba(0, 0, 0, 0.1);
+  outline: 3px solid red;
+  padding: 15px;
+  font-size: 18px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  width: 100%;
+  transition: border-color 0.3s ease;
+}
+
+.StripeElement--focus {
+  border-color: #ffffff;
+}
