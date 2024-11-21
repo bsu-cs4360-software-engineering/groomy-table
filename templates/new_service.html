@@ -1,0 +1,82 @@
+{% extends 'base-dash.html' %}
+
+{% block head %}
+<style>
+    .editable-text {
+        cursor: pointer;
+    }
+
+    .editable-input {
+        display: inline-block;
+        width: 100%;
+        padding: 5px;
+        border: 1px solid #000;
+        border-radius: 4px;
+    }
+
+    textarea {
+        width: 100%;
+        resize: none;
+        background-color: inherit;
+        outline: none;
+        border: none;
+        font-family: inherit;
+        font-size: inherit;
+        line-height: inherit;
+    }
+
+    /* Show the input only when it is active */
+    .editable-text:focus {
+        display: none;
+    }
+
+    .editable-input:focus {
+        background-color: inherit;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+<section class="flex-column">
+    <div class="section-header">
+        <h1>Create Service</h1>
+    </div>
+    <form class="section-form flex-column" id="service-form" method="post">
+        <table class="section-table">
+            <tr>
+                <td><strong>Name</strong></td>
+                <td class="editable-field">
+                    <input type="text" class="editable-input" id="name" name="name">
+                </td>
+            </tr>
+            <tr class="editable-field">
+                <td><strong>Description</strong></td>
+                <td class="editable-field">
+                    <input class="editable-input" id="description" name="description">
+                </td>
+            </tr>
+            <tr class="editable-field">
+                <td><strong>Price</strong></td>
+                <td class="editable-field">
+                    <input class="editable-input" id="price" name="price">
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Addon</strong></td>
+                <td><input type="checkbox" id="is_addon" name="is_addon"></td>
+            </tr>
+            <tr>
+                <td><strong>Package Deal</strong></td>
+                <td><input type="checkbox" id="is_package" name="is_package"></td>
+            </tr>
+            <tr>
+                <td><strong>Notes</strong></td>
+                <td>
+                    <textarea name="notes" rows="3" placeholder="New note"></textarea><br>
+                </td>
+            </tr>
+        </table>
+        <button class="section-form-submit" type="submit">Create</button>
+    </form>
+</section>
+{% endblock %}

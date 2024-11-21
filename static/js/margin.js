@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const footer = document.querySelector('footer');
+    const footer = document.querySelector('.footer-bottom');
     const main = document.querySelector('main');
 
     function adjustMainMargin() {

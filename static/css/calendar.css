@@ -1,0 +1,133 @@
+:root {
+    --week-margin: 25px;
+    --clear-border: 1px solid rgba(255, 255, 255, 0.3);
+    --border-radius: 20px;
+    --grey-background: rgba(145, 141, 141, 0.1);
+    --dark-grey-background: #dfdddd;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-container {
+    font-family: 'Kanit', sans-serif;
+    box-shadow: var(--box-shadow);
+    border-radius: 20px;
+}
+
+.calendar-base {
+    min-width: 600px;
+    max-height: 500px;
+    background-color: #fff;
+    color: #000;
+}
+
+.calendar-head,
+.calendar-body {
+    margin: 20px;
+    text-align: center;
+}
+
+.calendar-year-select {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    column-gap: 10px;
+    margin-right: 25px;
+    margin-bottom: 20px;
+}
+
+.year {
+    color: #000000;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.triangle-left {
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-right: 10px solid #000000;
+    border-bottom: 5px solid transparent;
+}
+
+.triangle-right {
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-left: 10px solid #000000;
+    border-bottom: 5px solid transparent;
+}
+
+.triangle-left:hover {
+    border-right: 10px solid #7d2ecc;
+    border-right: 10px solid #7d2ecc;
+}
+
+.triangle-right:hover {
+    border-left: 10px solid #7d2ecc;
+    border-left: 10px solid #7d2ecc;
+}
+
+.months,
+.days,
+.num-dates {
+    user-select: none;
+}
+
+.months {
+    color: #aaa;
+    word-spacing: 10px;
+}
+
+.month:not(.inactive):hover {
+    color: #9760ce;
+    color: #9760ce;
+    cursor: pointer;
+}
+
+.month.active {
+    color: #7d2ecc;
+    color: #7d2ecc;
+}
+
+.month-spacer {
+    border-color: #e8e8e8;
+    margin: revert;
+    width: 90%;
+}
+
+.days {
+    color: #aaa;
+    font-size: 18px;
+    word-spacing: 31px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.week {
+    margin-bottom: var(--week-margin);
+}
+
+.day {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    margin-left: 28px;
+    margin-right: 15px;
+    padding: 5px;
+}
+
+.day.active {
+    border-radius: 25%;
+    background-color: #7d2ecc;
+    position: relative;
+    color: #fff;
+}
+
+.day.inactive {
+    color: #aaaab1;
+}
+
+.day.selectable {
+    cursor: pointer;
+}

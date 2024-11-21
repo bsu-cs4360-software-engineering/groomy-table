@@ -1,41 +1,52 @@
+import stripe
 from flask import Blueprint, jsonify, render_template, request, redirect, session, url_for
-from flask_login import login_required
+from flask_login import login_required, current_user
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import SQLAlchemyError
 
 from datetime import datetime, timedelta
 
 from database import db
-from models.appointment import Appointment
+from models.appointment import Appointment, AppointmentStatus
 from models.customer import Customer
 from models.note import Note
 from models.place import Place
 from models.note_link import NoteLink
 from models.appointment_form import AppointmentForm
+from models.service import Service
 
 dash = Blueprint('dash', __name__)
 
 @dash.route('/dashboard')
 @login_required
 def dashboard():
+    return redirect(url_for('dash.appointments'))
+
+@dash.route('/dashboard/appointments')
+@login_required
+def appointments():
     now = datetime.now().date()
 
     appointments = Appointment.query.options(
         joinedload(Appointment.customer) # Load the associated customer
         .joinedload(Customer.places), # Load the Places associated with the Customer
         joinedload(Appointment.note_links) # Load NoteLinks, which access Notes
-    ).filter(Appointment.booked == True).order_by(Appointment.date, Appointment.time).all()
+    ).order_by(Appointment.date, Appointment.time).all()
 
     # Soft delete past appointments
     for appointment in appointments:
         if appointment.date < now:
-            appointment.booked = False
+            appointment.status = AppointmentStatus.COMPLETE
 
     db.session.commit()
 
     valid_appointments = [appt for appt in appointments if appt.date >= now]
 
     for appointment in valid_appointments:
+        name_parts = appointment.customer.name.split(' ', 1)
+        appointment.fname = name_parts[0]
+        appointment.lname = name_parts[1] if len(name_parts) > 1 else ""
+        appointment.display_date = appointment.date.strftime('%d-%b-%Y')
         appointment.display_time = appointment.time.strftime('%I:%M %p')
 
     appointments_today = len([appt for appt in valid_appointments if appt.date == now])
@@ -44,10 +55,113 @@ def dashboard():
         joinedload(Customer.places)
     ).all()
 
-    return render_template('dash.html',
+    return render_template('manage_appointments.html',
                             appointments=valid_appointments,
                             appointments_today=appointments_today,
-                            customers=customers)
+                            customers=customers,
+                            user=current_user)
+
+@dash.route('/dashboard/services')
+@login_required
+def services():
+    services = Service.query.options(
+        joinedload(Service.note_links)
+    ).all()
+
+    valid_services = [service for service in services if service.deleted != True]
+
+    return render_template('manage_services.html',
+                            services=valid_services,
+                            user=current_user)
+
+@dash.route('/dashboard/add_service', methods=['GET', 'POST'])
+@login_required
+def new_service():
+    if request.method == 'POST':
+
+        service = Service(
+            name=request.form['name'],
+            description=request.form['description'],
+            price='is_addon' in request.form,
+            is_package='is_package' in request.form
+        )
+
+        db.session.add(service)
+        db.session.commit()
+
+        return redirect(url_for('dash.services'))
+    
+    return render_template('new_service.html',
+                            user=current_user)
+
+@dash.route('/dashboard/edit_service/<int:service_id>', methods=['GET', 'POST'])
+@login_required
+def edit_service(service_id):
+    service = Service.query.options(
+        joinedload(Service.note_links).joinedload(NoteLink.note)
+    ).get(service_id)
+
+    if not service:
+        return "Service not found", 404
+    
+    if request.method == 'POST':
+        service.name = request.form['name']
+        service.description = request.form['description']
+        service.price = request.form['price']
+        service.is_addon = 'is_addon' in request.form
+        service.is_package = 'is_package' in request.form
+
+        existing_note_links = {note_link.note.id: note_link for note_link in service.note_links}
+        submitted_notes = request.form.getlist('notes')
+
+        service.note_links = []
+
+        for note_content in submitted_notes:
+            if note_content:
+                if existing_note_links:
+                    # Get the first note ID to update
+                    note_id = list(existing_note_links.keys())[0]
+                    note_link = existing_note_links.pop(note_id)
+                    note_link.note.content = note_content
+                    service.note_links.append(note_link)
+                else: # Create new note
+                    new_note = Note(
+                        content=note_content,
+                        created_by=current_user.username
+                    )
+
+                    db.session.add(new_note)
+                    db.session.commit()
+
+                    new_note_link = NoteLink(
+                        note_id=new_note.id,
+                        appointment_id=None,
+                        customer_id=None,
+                        service_id=service.id
+                    )
+
+                    service.note_links.append(new_note_link)
+
+        db.session.commit()
+        return redirect(url_for('dash.services'))
+    
+    return render_template('edit_service.html', 
+                            service=service,
+                            user=current_user)
+
+@dash.route('/dashboard/delete_service/<int:service_id>', methods=['POST'])
+@login_required
+def delete_service(service_id):
+    if request.method == 'POST':
+        service = Service.query.get(service_id)
+
+        if service:
+            service.deleted = True
+            db.session.commit()
+
+            return redirect(url_for('dash.services'))
+        else:
+            return jsonify({'error': 'Service not found.'}), 404
 
 @dash.route('/dashboard/edit_customer/<int:customer_id>', methods=['GET', 'POST'])
 @login_required
@@ -157,12 +271,24 @@ def delete_appointment(appointment_id):
         appointment = Appointment.query.get(appointment_id)
 
         if appointment:
-            appointment.booked = False
+            appointment.status = AppointmentStatus.DELETED
             db.session.commit()
 
             return jsonify({'success': True}), 200
         else:
             return jsonify({'error': 'Appointment not found.'}), 404
+
+@dash.route('/dashboard/book_appointment/<int:appointment_id>', methods=['POST'])
+@login_required
+def book_appointment(appointment_id):
+    appointment = Appointment.query.get(appointment_id)
+
+    if appointment.status != AppointmentStatus.OPEN:
+        return jsonify({'error': 'Appointment not in an open state.'})
+    
+    # Mark appointment as accepted
+    appointment.status = AppointmentStatus.BOOKED
+    db.session.commit()
 
 @dash.route('/dashboard/search_customer')
 @login_required
@@ -261,7 +387,8 @@ def confirmation():
             customer_id=customer.id,
             date=appointment_date,
             time=appointment_time,
-            booked=True
+            payed=False,
+            status=AppointmentStatus.BOOKED
         )
 
         db.session.add(new_appointment)
