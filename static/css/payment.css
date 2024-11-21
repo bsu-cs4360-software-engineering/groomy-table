@@ -31,12 +31,6 @@
 /* Error Message */
 #payment_error {
   color: red;
-  font-size: 14px;
-  margin-top: 10px;
-}
-
-.form-field {
-  margin-bottom: 20px;
 }
 
 /* Label Styling */
@@ -45,11 +39,14 @@
   font-weight: bold;
   display: block;
   margin-bottom: 5px;
+  text-align: left;
 }
 
 /* Card Input Styles */
-.form-field #card-name,
-.form-field .StripeElement {
+#card-name,
+#card-number-element,
+#card-expiry-element,
+#card-cvc-element {
   font-size: 16px;
   color: white;
   background: transparent;
@@ -59,57 +56,62 @@
   margin-bottom: 10px;
   width: 100%;
   outline: 2px solid pink;
+  transition: border-color 0.3s ease;
 }
 
-.form-field input:focus,
-.form-field .StripeElement--focus {
+#card-name:focus,
+#card-number-element.StripeElement--focus,
+#card-expiry-element.StripeElement--focus,
+#card-cvc-element.StripeElement--focus {
   border-bottom: var(--highlight);
   outline: 2px solid blue;
 }
 
-.form-field input:hover,
-.form-field .StripeElement--hover {
+#card-name:hover,
+#card-number-element.StripeElement--hover,
+#card-expiry-element.StripeElement--hover,
+#card-cvc-element.StripeElement--hover {
   border-bottom: var(--highlight);
 }
 
-/* Cardholder Name Input */
-.form-field #card-name,
-.form-field #card-number-element {
+/* Cardholder Name and Card Number Input */
+#card-name,
+#card-number-element {
   background-color: rgba(0, 0, 0, 0.2); /* Slightly transparent background */
   padding: 15px;
   font-size: 18px;
   border-radius: var(--border-radius);
   margin-bottom: 20px;
-  width: 100%;
-  border: var(--clear-border);
-  transition: border-color 0.3s ease;
 }
 
 /* Expiry and CVC Fields */
-.form-field .expiry-cvc-container {
+.bottomfield{
   display: flex;
   justify-content: space-between;
 }
 
-.form-field #card-expiry-element,
-.form-field #card-cvc-element {
+.bottomfield #card-expiry-element{
   background-color: rgba(0, 0, 0, 0.2); /* Slightly transparent background */
   padding: 15px;
   font-size: 18px;
   border-radius: var(--border-radius);
   margin-bottom: 20px;
-  width: 48%; /* Adjust width as needed */
-  border: var(--clear-border);
-  transition: border-color 0.3s ease;
 }
-
-/* Focus State Styling for Card Input */
-.form-field input:focus,
-.form-field #card-number-element.StripeElement--focus,
-.form-field #card-expiry-element.StripeElement--focus,
-.form-field #card-cvc-element.StripeElement--focus {
-  border-color: #ffffff; /* White border on focus */
-  outline: none;
+.bottomfield #card-cvc-element {
+  background-color: rgba(0, 0, 0, 0.2); /* Slightly transparent background */
+  padding: 15px;
+  font-size: 18px;
+  border-radius: var(--border-radius);
+  margin-bottom: 20px;
+}
+#cvcdiv {
+  width: 25%;
+}
+#expdatediv {
+  width: 25%;
+}
+#namediv {
+  width: 45%;
 }
 
 /* Submit Button Styling */
@@ -119,7 +121,7 @@
   font-size: 15px;
   padding: 10px 0;
   width: 40%;
-  border: var(--clear-border);
+  border: none;
   border-radius: var(--border-radius);
   cursor: pointer;
   transition: background-color 0.3s ease;

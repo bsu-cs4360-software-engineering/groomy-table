@@ -29,25 +29,27 @@
     <!-- Payment Form -->
     <form id="payment_form" method="post">
         <div id="payment_error"></div> <!-- Error message display -->
-<!--         
-        <div class="form-field">
-            <label for="card-name">Cardholder Name</label>
-            <div id="card-name">{{ appointment_data.name }}</div>
-        </div> -->
+        
+
     
-        <div class="form-field">
+        <div id="cnumdiv">
             <label for="card-number-element">Card Number</label>
-            <div id="card-number-element"></div>
+            <div id="card-number-element" class="StripeElement"></div>
         </div>
     
-        <div class="form-field">
-            <label for="card-expiry-element">Expiration Date</label>
-            <div id="card-expiry-element"></div>
-        </div>
-    
-        <div class="form-field">
-            <label for="card-cvc-element">CVC</label>
-            <div id="card-cvc-element"></div>
+        <div class="bottomfield">
+            <div id="namediv">
+                <label for="card-name">Cardholder Name</label>
+                <input id="card-name" type="text" placeholder="James Bond" required>
+            </div>
+            <div id="expdatediv">
+                <label for="card-expiry-element">Expiration Date</label>
+                <div id="card-expiry-element" class="StripeElement"></div>
+            </div>
+            <div id="cvcdiv">
+                <label for="card-cvc-element">CVC</label>
+                <div id="card-cvc-element" class="StripeElement"></div>
+            </div>
         </div>
     
         <!-- Any errors related to card input will be shown here -->
