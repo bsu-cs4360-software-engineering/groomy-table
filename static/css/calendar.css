@@ -1,5 +1,10 @@
 :root {
     --week-margin: 25px;
+    --clear-border: 1px solid rgba(255, 255, 255, 0.3);
+    --border-radius: 20px;
+    --grey-background: rgba(145, 141, 141, 0.1);
+    --dark-grey-background: #dfdddd;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .calendar-container {
@@ -32,7 +37,7 @@
 }
 
 .year {
-    color: #e8e8e8;
+    color: #000000;
     font-size: 30px;
     font-weight: bold;
 }
@@ -41,7 +46,7 @@
     width: 0;
     height: 0;
     border-top: 5px solid transparent;
-    border-right: 10px solid #e8e8e8;
+    border-right: 10px solid #000000;
     border-bottom: 5px solid transparent;
 }
 
@@ -49,15 +54,17 @@
     width: 0;
     height: 0;
     border-top: 5px solid transparent;
-    border-left: 10px solid #e8e8e8;
+    border-left: 10px solid #000000;
     border-bottom: 5px solid transparent;
 }
 
 .triangle-left:hover {
     border-right: 10px solid #7d2ecc;
+    border-right: 10px solid #7d2ecc;
 }
 
 .triangle-right:hover {
+    border-left: 10px solid #7d2ecc;
     border-left: 10px solid #7d2ecc;
 }
 
@@ -74,10 +81,12 @@
 
 .month:not(.inactive):hover {
     color: #9760ce;
+    color: #9760ce;
     cursor: pointer;
 }
 
 .month.active {
+    color: #7d2ecc;
     color: #7d2ecc;
 }
 
