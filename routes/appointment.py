@@ -5,7 +5,7 @@ from flask import Blueprint, jsonify, redirect, render_template, request, sessio
 from datetime import datetime, time, timedelta
 
 from database import db
-from models.appointment import Appointment
+from models.appointment import Appointment, AppointmentStatus
 from models.customer import Customer
 from models.place import Place
 from models.note import Note
@@ -21,9 +21,11 @@ def appointments():
     if form.validate_on_submit():
         if not form.time.data:
             return render_template('appointments.html', form=form)
+        
+        date = datetime.strptime(form.date.data, '%Y-%m-%d').date()
 
         # Validate the selected date
-        if not _is_valid_date(form.date.data):
+        if not _is_valid_date(date):
             form.name.errors.append('Select a date between today and a month from now.')
             return render_template('appointments.html', form=form)
         
@@ -35,7 +37,7 @@ def appointments():
             'email': form.email.data,
             'phone_number': form.phone_number.data,
             'street_address': form.street_address.data,
-            'date': form.date.data.isoformat(),
+            'date': date.isoformat(),
             'time': form.time.data,
             'notes': form.notes.data,
             'latitude': latitude,
@@ -79,15 +81,20 @@ def payment():
     if request.method == 'POST':
         try:
             amount = 1000
-            token = request.json.get('token')
             description = f"Appointment Booking Charge for {appointment_data['name']}"
 
-            charge = stripe.Charge.create(
+            payment_intent = stripe.PaymentIntent.create(
                 amount=amount,
                 currency="usd",
-                source=token,
-                description=description
+                description=description,
+                payment_method=request.json['payment_method_id'],
+                confirm=True,
+                capture_method="manual",
+                return_url=url_for('appts.confirmation', _external=True)
             )
+
+            appointment_data['payment_intent_id'] = payment_intent['id']
+            session['appointment_data'] = appointment_data
 
             return jsonify({'redirect_url': url_for('appts.confirmation')})
     
@@ -133,7 +140,9 @@ def confirmation():
             customer_id=customer.id,
             date=appointment_date,
             time=appointment_time,
-            booked=True
+            payed=False,
+            status=AppointmentStatus.OPEN,
+            payment_intent_id=appointment_data['payment_intent_id']
         )
 
         db.session.add(new_appointment)

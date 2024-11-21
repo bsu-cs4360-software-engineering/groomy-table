@@ -5,14 +5,22 @@
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB18HHJbiZIs6cT4GKPW0Vc_e6WQci8-ZE&loading=async&libraries=places">
     </script>
     <style>
+        .time-slots {
+            display: grid;
+            /* Creates 2 equal-width columns */
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
         .slot-label {
             display: block;
-            padding: 5px;
-            border: 2px solid var(--black);
+            padding: 5px 10px;
             color: var(--black);
             box-shadow: var(--box-shadow);
             border-radius: 5px;
             cursor: pointer;
+            text-align: center;
+            text-transform: lowercase;
         }
 
         .slot-label input[type="radio"] {
@@ -32,15 +40,193 @@
         }
 
         .slot-label:has(input[type="radio"]:checked) {
-            background: var(--dark-grey-background);
-            border: 2px solid var(--highlight);
+            background: #7d2ecc;
+            color: #fff;
         }
 
         .form-container {
             display: flex;
             flex-direction: row;
             column-gap: 20px;
-            align-items: flex-start;
+            align-items: stretch;
+            padding-bottom: 100px;
+        }
+
+        h2, h3, h4 {
+            color: #192a3d;
+        }
+
+        #booking-form {
+            border-radius: 0;
+            padding: 0;
+            background: none;
+            width: auto;
+            backdrop-filter: none;
+            box-shadow: none;
+            border: none;
+            overflow-y: auto;
+        }
+
+        .form-group input {
+            background: none;
+            box-shadow: none;
+            backdrop-filter: none;
+            border-radius: 0;
+        }
+
+        .form-group textarea {
+            border-radius: 0;
+            background: none;
+            border: none;
+            backdrop-filter: none;
+            box-shadow: none;
+            padding: 0;
+            margin: 0;
+            max-width: none;
+            min-height: unset;
+            align-self: unset;
+        }
+        
+        .form-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .form-group:has(textarea) {
+            position: relative;
+            display: block;
+        }
+
+        .form-group:focus-within label,
+        .form-group.not-empty label {
+            opacity: 0;
+            visibility: hidden;
+            transform: translate3d(20px, 0, 0);
+        }
+
+        .form-group label {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            margin: 0;
+            padding: 0 15px;
+            line-height: 1.5;
+            font-size: inherit;
+            cursor: text;
+            color: #3a4f66;
+            visibility: visible;
+            transition: opacity 0.15s 
+                cubic-bezier(0.455, 0.03, 0.515, 0.955),
+                transform 0.15s cubic-bezier(0.455, 0.03, 0.515, 0.955),
+                visibility 0.15s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 40px;
+            font-size: inherit;
+            margin: 0;
+            padding: 0 12px;
+            border-bottom: 2px solid #aaa;
+            transition: all 0.12s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            color: #3a4f66;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: 0;
+        }
+
+        .form-group input:user-valid {
+            border-bottom-color: #28b16d;
+        }
+
+        .form-group input:user-invalid {
+            border-bottom-color: #cc0000;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+            padding: 12px;
+        }
+
+        label .required {
+            color: #cc0000;
+        }
+
+        .form-group:has(textarea) label {
+            top: 7px;
+        }
+
+        button {
+            margin: 0;
+            background: none;
+            backdrop-filter: none;
+            box-shadow: none;
+            border: none;
+        }
+
+        input[type="submit"],
+        button[type="submit"] {
+            position: absolute;
+            right: 0;
+            margin-top: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            padding: 5px 20px;
+            border: none;
+            -webkit-appearance: none;
+            appearance: none;
+            text-align: center;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+            font-size: 15px;
+            font-weight: 500;
+            text-transform: capitalize;
+            color: #fff;
+            border: none;
+            background-color: #7d2ecc;
+        }
+
+        input[type="submit"]:hover,
+        button[type="submit"]:hover {
+            transform: translate3d(0, -3px, 0);
+            background-color: #7d2ecc;
+        }
+
+        input[type="submit"]::before,
+        button[type="submit"]::before {
+            display: block;
+            position: absolute;
+            z-index: -1;
+            content: '';
+            top: 12px;
+            left: 10px;
+            right: 10px;
+            bottom: 0;
+            opacity: 0;
+            border-radius: inherit;
+            background-color: #7d2ecc;
+            transition: all 0.2s ease;
+            filter: blur(11px);
+        }
+
+        input[type="submit"]:hover::before,
+        button[type="submit"]:hover::before {
+            opacity: 0.8;
         }
     </style>
 {% endblock %}
@@ -54,75 +240,67 @@
 
 {% block content %}
     <section>
-        <div class="calendar-container">
-            <div class="calendar-base">
-                <div class="year"></div>
-                <div class="triangle-left"></div>
-                <div class="triangle-right"></div>
-                <div class="months">
-                    <span class="month">Jan</span>
-                    <span class="month">Feb</span>
-                    <span class="month">Mar</span>
-                    <span class="month">Apr</span>
-                    <span class="month">May</span>
-                    <span class="month">Jun</span>
-                    <span class="month">Jul</span>
-                    <span class="month">Aug</span>
-                    <span class="month">Sep</span>
-                    <span class="month">Oct</span>
-                    <span class="month">Nov</span>
-                    <span class="month">Dec</span>
-                </div>
-                <hr class="month-spacer">
-                <div class="days">SUN MON TUE WED THU FRI SAT</div>
-                <div class="num-dates"></div>
-            </div>
-            <div class="calendar-left">
-                <div class="hamburger">
-                    <div class="burger-line"></div>
-                    <div class="burger-line"></div>
-                    <div class="burger-line"></div>
-                </div>
-                <div class="num-date"></div>
-                <div class="num-date-day"></div>
-            </div>
-        </div>
-        <h2>Book Your Appointment</h2>
         <div class="form-container">
-            <form id="booking_form" method="post" action="{{ url_for('appts.appointments') }}">
-                
-                {{ form.hidden_tag() }} <!-- CSRF protection -->               
-                <div class="form-group">
-                    <label for="name">Full Name:</label>
-                    {{ form.name(size=32) }}
-                </div>                
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    {{ form.email(size=32) }}
-                </div>                
-                <div class="form-group">
-                    <label for="phone_number">Phone Number:</label>
-                    {{ form.phone_number(size=32, pattern='[0-9]{3}-[0-9]{3}-[0-9]{4}', placeholder='123-456-7890') }}
+            <div class="calendar-container">
+                <div class="calendar-base">
+                    <div class="calendar-head">
+                        <div class="calendar-year-select">
+                            <div class="triangle-left"></div>
+                            <div class="year"></div>
+                            <div class="triangle-right"></div>
+                        </div>
+                        <div class="months">
+                            <span class="month">Jan</span>
+                            <span class="month">Feb</span>
+                            <span class="month">Mar</span>
+                            <span class="month">Apr</span>
+                            <span class="month">May</span>
+                            <span class="month">Jun</span>
+                            <span class="month">Jul</span>
+                            <span class="month">Aug</span>
+                            <span class="month">Sep</span>
+                            <span class="month">Oct</span>
+                            <span class="month">Nov</span>
+                            <span class="month">Dec</span>
+                        </div>
+                        <hr class="month-spacer">
+                        <div class="days">SUN MON TUE WED THU FRI SAT</div>
+                    </div>
+                    <div class="calendar-body">
+                        <div class="num-dates"></div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="street_address">Street Address:</label>
-                    {{ form.street_address(size=32, id='street_address') }}
-                </div>                
-                <input type="hidden" id="latitude" name="latitude">
-                <input type="hidden" id="longitude" name="longitude">
-                <div class="form-group">
-                    <label for="date">Select Date:</label>
-                    {{ form.date() }}
-                </div>
-                <di class="form-group">
-                    <label for="notes">Notes:</label>
-                    {{ form.notes(size=32) }}
-                </div>
-                <div>
-                    <button type="submit" id="submit">Proceed to Payment</button>
-                </div>
-            </form>
-            <div id="time_slots"></div>
+            </div>
+            <div style="position: relative">
+                <form id="booking-form" method="post" action="{{ url_for('appts.appointments') }}">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        <label for="name">Full Name <b class="required">&nbsp;*</b></label>
+                        {{ form.name(size=32) }}
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email <b class="required">&nbsp;*</b></label>
+                        {{ form.email(size=32) }}
+                    </div>
+                    <div class="form-group">
+                        <label for="phone_number">Phone Number</label>
+                        {{ form.phone_number(size=32, pattern='[0-9]{3}-[0-9]{3}-[0-9]{4}') }}
+                    </div>
+                    <div class="form-group">
+                        <label for="street_address">Street Address <b class="required">&nbsp;*</b></label>
+                        {{ form.street_address(size=32, id='street_address') }}
+                    </div>
+                    <input type="hidden" id="latitude" name="latitude">
+                    <input type="hidden" id="longitude" name="longitude">
+                    <div class="form-group">
+                        <label for="notes">Notes</label>
+                        {{ form.notes(size=32, cols='45', rows='8') }}
+                    </div>
+                </form>
+                <h4 style="margin-bottom: 15px">Select Time</h4>
+                <div class="time-slots"></div>
+                <button type="submit" form="booking-form" value="Payment">Proceed</button>
+            </div>
         </div>
     </section>
     <script src="{{ url_for('static', filename='js/calendar.js') }}"></script>
@@ -132,6 +310,8 @@
             const input = document.getElementById('street_address');
             const autocomplete = new google.maps.places.Autocomplete(input);
             autocomplete.setFields(['address_component', 'geometry']);
+
+            input.placeholder = '';
 
             autocomplete.addListener('place_changed', function() {
                 const place = autocomplete.getPlace();
@@ -143,68 +323,27 @@
                 }
             });
         }
-
-        // Function to set min and max dates
-        function setDateLimits() {
-            const today = new Date();
-            today.setDate(today.getDate() + 1);
-            const minDate = today.toISOString().split('T')[0];
-            document.getElementById('date').setAttribute('min', minDate);
-
-            const maxDate = new Date();
-            maxDate.setMonth(today.getMonth() + 1);
-            document.getElementById('date').setAttribute('max', maxDate.toISOString().split('T')[0]);
-        }
-
-        function fetchAvailableSlots() {
-            const dateInput = document.getElementById('date');
-            const date = dateInput.value;
-
-            fetch(`/available_slots?date=${date}`)
-                .then(response => response.json())
-                .then(data => {
-                    const slotsDiv = document.getElementById('time_slots');
-                    slotsDiv.innerHTML = '';
-
-                    data.forEach(slot => {
-                        const label = document.createElement('label');
-                        label.className = 'slot-label';
-
-                        const checkbox = document.createElement('input');
-                        checkbox.type = 'radio';
-                        checkbox.name = 'time_slot';
-                        checkbox.value = slot.time;
-
-                        checkbox.addEventListener('change', function() {
-                            document.getElementById('time').value = slot.time;
-                        });
-
-                        label.appendChild(checkbox);
-                        label.appendChild(document.createTextNode(slot.time));
-
-                        if (slot.booked) {
-                            label.style.textDecoration = 'line-through';
-                            checkbox.disabled = true;
-                        }
-
-                        slotsDiv.appendChild(label);
-                    });
-                })
-            .catch(error => {
-                console.error('Error fetching slots:', error);
-            });
-        }   
         
         window.onload = function() {
-            setDateLimits();
-            // initAutocomplete();
-
-            document.getElementById('date').addEventListener('change', function() {
-                const selectedDate = this.value;
-                if (selectedDate) {
-                    fetchAvailableSlots();
-                }
-            });
+            initAutocomplete();
         }
+
+        document.querySelectorAll('.form-group').forEach(group => {
+            const input = group.querySelector('input, textarea');
+
+            if (input) {
+                input.addEventListener('input', () => {
+                    if (input.value.trim() !== '') {
+                        group.classList.add('not-empty');
+                    } else {
+                        group.classList.remove('not-empty');
+                    }
+                });
+
+                if (input.value.trim() !== '') {
+                    group.classList.add('not-empty');
+                }
+            }
+        })
     </script>
 {% endblock %}

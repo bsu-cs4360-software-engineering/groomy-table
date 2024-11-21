@@ -36,7 +36,11 @@
 
         document.getElementById('payment_form').addEventListener('submit', async (event) => {
             event.preventDefault();
-            const {token, error} = await stripe.createToken(cardElement);
+
+            const {error, paymentMethod} = await stripe.createPaymentMethod({
+                type: 'card',
+                card: cardElement,
+            });
 
             if (error) {
                 document.getElementById('payment_error').innerText = error.message;
@@ -46,7 +50,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({token: token.id})
+                    body: JSON.stringify({payment_method_id: paymentMethod.id})
                 });
 
                 const result = await response.json();
