@@ -4,6 +4,7 @@
     <title>Book Your Appointment - Groomy</title>
     <!-- Stripe.js Library -->
     <script src="https://js.stripe.com/v3/"></script>
+    <link rel="stylesheet" href="payment.css">
 {% endblock %}
 
 {% block nav %}
@@ -28,35 +29,57 @@
     <!-- Payment Form -->
     <form id="payment_form" method="post">
         <div id="payment_error"></div> <!-- Error message display -->
-        
-        <!-- Stripe Card Input Element -->
-        <div id="card-element" class="StripeElement">
-            <!-- A Stripe Element will be inserted here. -->
+<!--         
+        <div class="form-field">
+            <label for="card-name">Cardholder Name</label>
+            <div id="card-name">{{ appointment_data.name }}</div>
+        </div> -->
+    
+        <div class="form-field">
+            <label for="card-number-element">Card Number</label>
+            <div id="card-number-element"></div>
         </div>
-
+    
+        <div class="form-field">
+            <label for="card-expiry-element">Expiration Date</label>
+            <div id="card-expiry-element"></div>
+        </div>
+    
+        <div class="form-field">
+            <label for="card-cvc-element">CVC</label>
+            <div id="card-cvc-element"></div>
+        </div>
+    
         <!-- Any errors related to card input will be shown here -->
         <div id="card-errors" role="alert"></div>
-
+    
         <button type="submit">Book Appointment</button>
     </form>
+    
 
     <script>
         // Initialize Stripe
         const stripe = Stripe('pk_test_51QDTQWJi74T5Aw7FKv8OFdXH8y1XC70ieQkvqsAVbq2gD5hB23VAxFvdyAJllZKTvlLh6ihO38D6l79em9HeyodJ00WgtKXJ8e');
         const elements = stripe.elements();
 
-        // Create a Stripe card element
-        const cardElement = elements.create('card');
+        // Create separate Stripe elements for card number, expiry, and CVC
+        const cardNumberElement = elements.create('cardNumber');
+        const cardExpiryElement = elements.create('cardExpiry');
+        const cardCvcElement = elements.create('cardCvc');
 
-        // Mount the card element to the DOM
-        cardElement.mount('#card-element');
+        // Mount the elements to the DOM
+        cardNumberElement.mount('#card-number-element');
+        cardExpiryElement.mount('#card-expiry-element');
+        cardCvcElement.mount('#card-cvc-element');
 
         // Handle form submission
         document.getElementById('payment_form').addEventListener('submit', async (event) => {
             event.preventDefault();  // Prevent the default form submission behavior
 
-            // Create a token with the card element
-            const { token, error } = await stripe.createToken(cardElement);
+            const cardName = document.getElementById('card-name').value;
+
+            // Create a token with the card elements
+            const { token, error } = await stripe.createToken(cardNumberElement, { name: cardName });
 
             if (error) {
                 // If there's an error, display it to the user
@@ -68,7 +91,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ token: token.id })  // Send the token in the request body
+                    body: JSON.stringify({ token: token.id })
                 });
 
                 const result = await response.json();
