@@ -10,10 +10,9 @@
   --dark-grey-background: #dfdddd;
   --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
 /* General Form Styles */
 #payment_form {
-  background: var(--grey-background);
+  background: var(--dark-grey-background);
   backdrop-filter: blur(35px);
   border-radius: var(--border-radius);
   border: var(--clear-border);
@@ -51,20 +50,27 @@
   color: white;
   background: transparent;
   border: var(--clear-border);
-  border-bottom: 2px solid #fff;
   padding: 8px;
   margin-bottom: 10px;
   width: 100%;
-  outline: 2px solid pink;
+  /* outline: 2px solid pink; */
   transition: border-color 0.3s ease;
+  border-radius: 0;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 0px;
+  height: auto;
+  background-color: transparent;
+  backdrop-filter: blur(35px);
+  box-shadow: var(--box-shadow);
+ 
 }
 
 #card-name:focus,
 #card-number-element.StripeElement--focus,
 #card-expiry-element.StripeElement--focus,
 #card-cvc-element.StripeElement--focus {
-  border-bottom: var(--highlight);
-  outline: 2px solid blue;
+  border-bottom: 1px solid var(--highlight);
 }
 
 #card-name:hover,
@@ -80,7 +86,7 @@
   background-color: rgba(0, 0, 0, 0.2); /* Slightly transparent background */
   padding: 15px;
   font-size: 18px;
-  border-radius: var(--border-radius);
+  /* border-radius: var(--border-radius); */
   margin-bottom: 20px;
 }
 
@@ -94,14 +100,14 @@
   background-color: rgba(0, 0, 0, 0.2); /* Slightly transparent background */
   padding: 15px;
   font-size: 18px;
-  border-radius: var(--border-radius);
+  /* border-radius: var(--border-radius); */
   margin-bottom: 20px;
 }
 .bottomfield #card-cvc-element {
   background-color: rgba(0, 0, 0, 0.2); /* Slightly transparent background */
   padding: 15px;
   font-size: 18px;
-  border-radius: var(--border-radius);
+  /* border-radius: var(--border-radius); */
   margin-bottom: 20px;
 }
 #cvcdiv {
@@ -112,6 +118,13 @@
 }
 #namediv {
   width: 45%;
+}
+#card-name {
+  width: 100%;
+  font-size: 15px;
+  color: var(--black);
+  outline: none;
+  /* height: 49.8px; */
 }
 
 /* Submit Button Styling */
@@ -150,3 +163,4 @@
     padding: 12px 0;
   }
 }
+
