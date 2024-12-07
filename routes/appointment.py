@@ -1,6 +1,7 @@
 import stripe
 from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
+from sqlalchemy.orm import joinedload
 
 from datetime import datetime, time, timedelta
 
@@ -11,6 +12,8 @@ from models.place import Place
 from models.note import Note
 from models.note_link import NoteLink
 from models.appointment_form import AppointmentForm
+from models.invoice import Invoice
+from models.service import Service
 
 appts = Blueprint('appts', __name__)
 
@@ -44,7 +47,7 @@ def appointments():
             'longitude': longitude
         }
 
-        return redirect(url_for('appts.payment'))
+        return redirect(url_for('appts.invoice'))
     
     return render_template('appointments.html', form=form)
 
@@ -70,6 +73,36 @@ def available_slots():
         })
 
     return jsonify(available_slots)
+
+@appts.route('/invoice', methods=['GET', 'POST'])
+def invoice():
+    appointment_data = session.get('appointment_data')
+
+    if not appointment_data:
+        return redirect(url_for('appts.appointments'))
+
+    invoice_id = session.get('invoice_id')
+    services = Service.query.options(
+        joinedload(Service.note_links)
+    ).all()
+    
+
+    if invoice_id:
+        invoice_to_display = Invoice.query.get_or_404(invoice_id)
+        invoice_to_display.customer_name = appointment_data['name']
+        invoice_to_display.customer_address = appointment_data['street_address']
+        db.session.commit()
+    else:
+        new_invoice = Invoice(
+            customer_name=appointment_data['name'],
+            customer_address=appointment_data['street_address'],
+        )
+        db.session.add(new_invoice)
+        db.session.commit()
+        session['invoice_id'] = new_invoice.id
+        invoice_to_display = new_invoice
+
+    return render_template('invoice.html', appointment_data=appointment_data, invoice_info=invoice_to_display, services=services)
 
 @appts.route('/payment', methods=['GET', 'POST'])
 def payment():

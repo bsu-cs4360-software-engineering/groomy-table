@@ -1,6 +1,6 @@
 from database import db
 
-class UserPass(db.Model):
+class UserPassword(db.Model):
     __tablename__ = 'user_password'
 
     id = db.Column(db.Integer, primary_key=True)
