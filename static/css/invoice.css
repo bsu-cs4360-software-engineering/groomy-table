@@ -1,3 +1,23 @@
+:root {
+    --primary: #7d2ecc;
+    --highlight: #9760ce;
+    --black: #101010;
+    --white: #fff;
+
+    --clear-border: 1px solid rgba(255, 255, 255, 0.3);
+    --border-radius: 20px;
+    --grey-background: rgba(145, 141, 141, 0.1);
+    --dark-grey-background: #dfdddd;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    
+    --text: #3a4f66;
+
+    --footer-box-shadow: 0px 30px 50px rgba(0, 0, 0, 0.1);
+    --container-width: min(100%, calc(90vw - 0px * 2));
+    --container-max-width: 1290px;
+    --footer-text: #3a4f66;
+}
+
 .grid-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -16,7 +36,7 @@
     padding-left: 10%;
     text-align: left;
     font-size: 5em;
-    color: #9760ce;
+    color: var(--primary);
 }
 
 .grid-container div {
@@ -68,7 +88,7 @@
 }
 
 #selected-services th {
-    background-color: #4400ff;
+    background-color: var(--primary);
     color: #fff;
 }
 
@@ -86,7 +106,7 @@ tbody tr:nth-child(even) {
 }
 
 button {
-    background-color: #5041bc;
+    background-color: var(--primary);
     color: white;
     border: none;
     padding: 10px 15px;
@@ -95,7 +115,7 @@ button {
 }
 
 button:hover {
-    background-color: #624de3;
+    background-color: var(--highlight);
 }
 
 
