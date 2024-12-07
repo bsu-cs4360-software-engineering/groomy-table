@@ -43,14 +43,14 @@
     padding-bottom: 2em;
 }
 
-.grid-container div h2 {
+/* .grid-container div h2 {
     font-size: xx-large;
     font-weight: lighter;
-}
+} */
 
-.grid-container div p {
+/* .grid-container div p {
     font-size: x-large;
-}
+} */
 
 .centered-line {
     margin: 20px auto 0;
