@@ -80,7 +80,7 @@
 
             const {error, paymentMethod} = await stripe.createPaymentMethod({
                 type: 'card',
-                card: cardElement,
+                card: cardNumberElement,
             });
 
             if (error) {
