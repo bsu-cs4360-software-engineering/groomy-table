@@ -1,0 +1,343 @@
+@supports (zoom: 67%) {
+    body.zoom {
+        zoom: 75%;
+    }
+}
+
+:root {
+    --primary: #5041bc;
+    --highlight: #624de3;
+    --black: #000;
+    --white: #fff;
+
+    --button-padding: 8px 12px;
+    --button-disabled: #dedede;
+    --button-disabled-color: #838383;
+    
+    --container-width: min(100%, calc(90vw - 0px * 2));
+    --container-max-width: 1290px;
+
+    --table-row-even: #f7f6fe;
+
+    --status-complete: #fBf4f4;
+    --status-complete-color: #bc4141;
+    --status-open: #ebf9f1;
+    --status-open-color: #41bc63;
+    --status-booked: #fbf9f4;
+    --status-booked-color: #bc9241;
+}
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body, #root {
+    height: 100%;
+}
+
+body {
+    font-family: Montserrat, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    background: var(--primary);
+}
+
+svg {
+    width: 100%;
+    height: auto;
+    vertical-align: middle;
+}
+
+#root {
+    display: flex;
+    flex-direction: row;
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 250px;
+    margin: 30px 0;
+    padding: 5px;
+}
+
+.header-item {
+    padding: 10px;
+    color: var(--white);
+}
+
+.header-top,
+.header-bottom {
+    display: flex;
+    flex-direction: column;
+}
+
+.header-item:has(.header-logo) {
+    align-self: center;
+}
+
+.header-divider {
+    padding: 10px;
+    margin: 0 auto;
+    width: var(--container-width);
+    max-width: var(--container-max-width);
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    user-select: none;
+    font-size: 1.5em;
+    text-transform: uppercase;
+    color: var(--white);
+}
+
+.header-logo img {
+    width: 1.25em;
+    height: auto;
+}
+
+.header-logo .right-paw {
+    margin-top: 10px;
+}
+
+.header-logo p {
+    color: inherit;
+}
+
+.header-divider span {
+    display: block;
+    border-top: 1px solid #d0d5dd;
+    width: 100%;
+}
+
+.header-nav {
+    padding: 10px;
+    color: var(--white);
+    font-size: 1em;
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-links li {
+    list-style: none;
+    cursor: pointer;
+    color: var(--white);
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.nav-links li a,
+a.logout {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+    text-decoration: none;
+    padding: var(--button-padding);
+    color: inherit;
+    border-radius: 4px;
+}
+
+.nav-links li a svg,
+a.logout svg {
+    width: 1.25em;
+    height: auto;
+}
+
+.nav-links li a p {
+    padding: 0;
+    margin: 0;
+}
+
+.nav-links li a.active,
+a.logout {
+    color: var(--primary);
+    background: var(--white);
+}
+
+.nav-links li a.active#appointments svg {
+    fill: var(--primary);
+}
+
+.nav-links li a.active#customers svg path,
+.nav-links li a.active#services svg g {
+    stroke: var(--primary);
+}
+
+.header-item.user {
+    font-weight: 500;
+}
+
+.user-title {
+    margin-bottom: 10px;
+}
+
+main {
+    color: var(--black);
+    background: var(--white);
+    flex-grow: 1;
+    border-top-left-radius: 40px;
+    border-bottom-left-radius: 40px;
+    padding: 40px 25px;
+}
+
+section.flex-column,
+form.flex-column {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+}
+
+.section-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-header h1 {
+    font-size: 2em;
+}
+
+.section-header-options {
+    display: flex;
+    font-size: 0.75em;
+}
+
+.section-header-options .add {
+    display: flex;
+    align-items: center;
+    padding: var(--button-padding);
+    text-decoration: none;
+    color: var(--white);
+    background: var(--highlight);
+    border-radius: 8px;
+    column-gap: 5px;
+}
+
+.add svg {
+    width: 1.25em;
+    height: auto;
+}
+
+.section-table {
+    border: 0;
+    border-collapse: collapse;
+    font-size: 0.875em;
+    width: 100%;
+}
+
+.section-table th,
+.section-table td {
+    padding: 15px 25px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.section-table td.action {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    column-gap: 10px;
+}
+
+.section-table td.status {
+    text-transform: lowercase;
+}
+
+.section-table td.action .delete,
+.section-table td.action .view-edit {
+    cursor: pointer;
+    width: 2em;
+}
+
+.section-table td.status span {
+    border-radius: 22px;
+    padding: 8px 25px;
+}
+
+.section-table td.status.open span {
+    border: 1px solid var(--status-open-color);
+    background: var(--status-open);
+    color: var(--status-open-color);
+}
+
+.section-table td.status.complete span,
+.section-table td.status.deleted span,
+.section-table td.status.closed span {
+    border: 1px solid var(--status-complete-color);
+    background: var(--status-complete);
+    color: var(--status-complete-color);
+}
+
+.section-table td.status.booked span {
+    border: 1px solid var(--status-booked-color);
+    background: var(--status-booked);
+    color: var(--status-booked-color);
+}
+
+
+.section-table td.status::first-letter {
+    text-transform: uppercase;
+}
+
+.section-table td.description {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 480px;
+}
+
+.section-table td.price::before {
+    content: '$';
+}
+
+.section-table td a.button {
+    color: var(--white);
+    text-decoration: none;
+    background: var(--highlight);
+    padding: var(--button-padding);
+    border-radius: 8px;
+    user-select: none;
+    cursor: pointer;
+}
+
+.section-table tr:nth-child(n+12) {
+    display: none;
+}
+
+.section-table td a.button.disabled {
+    cursor: default;
+    background: var(--button-disabled);
+    color: var(--button-disabled-color);
+}
+
+.section-table tr:nth-child(odd) {
+    background: var(--white);
+}
+
+.section-table tr:nth-child(even) {
+    background: var(--table-row-even);
+}
+
+a.logout {
+    justify-content: center;
+}
+
+.section-form-submit {
+    color: var(--white);
+    background: var(--highlight);
+    padding: var(--button-padding);
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    align-self: flex-end;
+    font-size: inherit;
+    font-family: inherit;
+}

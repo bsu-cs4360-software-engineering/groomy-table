@@ -76,12 +76,12 @@
 
         // Handle form submission
         document.getElementById('payment_form').addEventListener('submit', async (event) => {
-            event.preventDefault();  // Prevent the default form submission behavior
+            event.preventDefault();
 
-            const cardName = document.getElementById('card-name').value;
-
-            // Create a token with the card elements
-            const { token, error } = await stripe.createToken(cardNumberElement, { name: cardName });
+            const {error, paymentMethod} = await stripe.createPaymentMethod({
+                type: 'card',
+                card: cardElement,
+            });
 
             if (error) {
                 // If there's an error, display it to the user
@@ -93,7 +93,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ token: token.id })
+                    body: JSON.stringify({payment_method_id: paymentMethod.id})
                 });
 
                 const result = await response.json();

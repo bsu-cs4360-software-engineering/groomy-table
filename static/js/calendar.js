@@ -5,7 +5,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const triangleRight = container.querySelector(".triangle-right");
     const months = container.querySelectorAll(".month");
     const days = container.querySelector(".num-dates");
-    const dateDisplay = container.querySelector(".calendar-left");
+    // const dateDisplay = container.querySelector(".calendar-left");
+    const slots = document.querySelector(".time-slots");
 
     let today = new Date();
     // Set time to midnight
@@ -102,16 +103,61 @@ document.addEventListener("DOMContentLoaded", function () {
         // Clear previous selection
         days.querySelectorAll(".active").forEach(el => el.classList.remove("active"));
         dayElement.classList.add("active");
-        selectedDay = String(date.getDate()).padStart(2, '0'); // Format as two digits
 
-        dateDisplay.querySelector(".num-date").textContent = selectedDay;
-        dateDisplay.querySelector(".num-date-day").textContent = date.toLocaleDateString("en-US", { weekday: "long" });
+        // Fill the hidden input with the selected date in YYYY-MM-DD format
+        const dateInput = document.getElementById('date');
+        dateInput.value = date.toISOString().split("T")[0];
+
+        // selectedDay = String(date.getDate()).padStart(2, '0'); // Format as two digits
+        fetchAvailableSlots(date);
+
+        // dateDisplay.querySelector(".num-date").textContent = selectedDay;
+        // dateDisplay.querySelector(".num-date-day").textContent = date.toLocaleDateString("en-US", { weekday: "long" });
     }
 
     function updateMonth() {
         months.forEach((month, index) => {
             month.classList.toggle("inactive", selectedYear === currentYear && index < today.getMonth());
         });
+    }
+
+    function fetchAvailableSlots(date) {
+        // Format date as YYYY-MM-DD
+        const formattedDate = date.toISOString().split("T")[0];
+
+        fetch(`/available_slots?date=${formattedDate}`)
+            .then(response => response.json())
+            .then(data => {
+                // Clear existing slots
+                slots.innerHTML = "";
+
+                data.forEach(slot => {
+                    const label = document.createElement("label");
+                    label.className = "slot-label";
+
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "radio";
+                    checkbox.name = "time-slot";
+                    checkbox.value = slot.time;
+
+                    checkbox.addEventListener("change", function() {
+                        document.getElementById("time").value = slot.time;
+                    });
+
+                    label.appendChild(checkbox);
+                    label.appendChild(document.createTextNode(slot.time));
+
+                    if (slot.booked) {
+                        label.style.color = "red";
+                        checkbox.disabled = true;
+                    }
+
+                    slots.appendChild(label);
+                });
+            })
+            .catch(error => {
+                console.error("Error fetching slots:", error);
+            });
     }
 
     // Initialize months to show which are inactive
