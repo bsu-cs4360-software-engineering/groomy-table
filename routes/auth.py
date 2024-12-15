@@ -5,6 +5,7 @@ from wtforms.validators import DataRequired
 from flask_login import login_user, logout_user, login_required
 from werkzeug.security import check_password_hash
 
+from database import db
 from models.user import User
 
 auth = Blueprint('auth', __name__)
@@ -21,8 +22,8 @@ def login():
     if form.validate_on_submit():
         username_or_email = form.username_or_email.data
         password = form.password.data
-        user_username = User.query.filter_by(username=username_or_email).first()
-        user_email = User.query.filter_by(email=username_or_email).first()
+        user_username = db.query(User).filter_by(username=username_or_email).first()
+        user_email = db.query(User).filter_by(email=username_or_email).first()
 
         if user_username and check_password_hash(user_username.password.password_hash, password):
             login_user(user_username)

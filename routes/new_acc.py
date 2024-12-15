@@ -31,8 +31,8 @@ def create_user():
             form.username.errors.append("Passwords do not match.")
         else:
             new_pass = UserPass(password_hash=generate_password_hash(form.password.data))
-            db.session.add(new_pass)
-            db.session.flush()
+            db.add(new_pass)
+            db.flush()
 
             new_user = User(
                 username    = form.username.data,
@@ -40,21 +40,21 @@ def create_user():
                 password_id = new_pass.id
             )
 
-            db.session.add(new_user)
-            db.session.add(new_pass)
-            db.session.commit()
+            db.add(new_user)
+            db.add(new_pass)
+            db.commit()
             return redirect(url_for('auth.login'))
             
     return render_template('create_account.html', form=form)
 
 def _username_exists(input_username : str) -> bool:
-    if User.query.filter_by(username = input_username).first():
+    if db.query(User).filter_by(username = input_username).first():
         return True
     else:
         return False
     
 def _email_exists(input_email : str) -> bool:
-    if User.query.filter_by(email = input_email).first():
+    if db.query(User).filter_by(email = input_email).first():
         return True
     else:
         return False

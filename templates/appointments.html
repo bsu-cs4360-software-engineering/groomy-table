@@ -332,6 +332,26 @@
             const input = group.querySelector('input, textarea');
 
             if (input) {
+                if (input.id === 'phone_number') {
+                    input.addEventListener('focus', function() {
+                        input.setAttribute('placeholder', '123-456-7890');
+                    });
+
+                    input.addEventListener('blur', function() {
+                        input.removeAttribute('placeholder');
+                    });
+                }
+
+                if (input.id === 'email') {
+                    input.addEventListener('focus', function() {
+                        input.setAttribute('placeholder', 'john.doe@example.com');
+                    });
+
+                    input.addEventListener('blur', function() {
+                        input.removeAttribute('placeholder');
+                    });
+                }
+
                 input.addEventListener('input', () => {
                     if (input.value.trim() !== '') {
                         group.classList.add('not-empty');
@@ -344,6 +364,6 @@
                     group.classList.add('not-empty');
                 }
             }
-        })
+        });
     </script>
 {% endblock %}
