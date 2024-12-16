@@ -440,12 +440,12 @@ h2, h3, h4 {
 }
 
 #booking-form {
-    border-radius: var(--border-radius);
-    padding: 0;
+    border-radius: none;
+    padding: 5px;
     background: none;
     width: auto;
     backdrop-filter: none;
-    box-shadow: var(--box-shadow);
+    box-shadow: none;
     border: none;
     overflow-y: auto;
 }
