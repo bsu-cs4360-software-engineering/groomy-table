@@ -227,6 +227,16 @@
         button[type="submit"]:hover::before {
             opacity: 0.8;
         }
+
+        @media (max-width: 768px) {
+            .form-container {
+                display: flex;
+                flex-direction: column;
+                column-gap: 20px;
+                align-items: stretch;
+                padding-bottom: 100px;
+            }
+        }
     </style>
 {% endblock %}
 
