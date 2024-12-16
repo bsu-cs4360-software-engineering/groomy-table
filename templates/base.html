@@ -10,6 +10,7 @@
 </head>
 <body>
     <div id="root">
+        {% include 'mobile_header.html' %}
         <header>
             {% block header %}
             <div class="header-container">
@@ -32,12 +33,13 @@
             </div>
             {% endblock %}
         </header>
-        <main>
+        <main class="main-content">
             {% block content %}{% endblock %}
         </main>
         <footer>
+            {% include 'mobile_footer.html' %}
             {% block footer %}
-                <div class="footer-top">
+                <div class="footer-top" id="mobile-footer-top">
                     <div class="column">
                         <div class="column-block footer-logo">
                             <p>Gr</p>

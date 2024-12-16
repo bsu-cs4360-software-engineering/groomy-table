@@ -1,0 +1,30 @@
+{% block mobile %}
+<div class="mobile">
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+        }
+    </script>
+    <header class="mobile-header">
+        <button class="nav-toggle" onclick="toggleSidebar()">☰</button>
+        <div class="mobile-header-div">
+            <a class="header-logo" href="{{ url_for('main.index') }}">
+                <p>Gr</p>
+                <img class="left-paw" src="{{ url_for('static', filename='img/paw-logo-left.svg') }}" alt="Left Paw">
+                <img class="right-paw" src="{{ url_for('static', filename='img/paw-logo-right.svg') }}" alt="Right Paw">
+                <p>my</p>
+            </a>
+        </div>
+    </header>
+    <div class="sidebar" id="sidebar">
+        <h2>Navigation</h2>
+        <ul>
+            <li><a class="start-home" href="/">Home</a></li>
+            <li><a href="{{ url_for('appts.appointments') }}">Book Appointment</a></li>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Contact Us</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
