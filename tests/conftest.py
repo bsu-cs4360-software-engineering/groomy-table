@@ -6,26 +6,40 @@ from login_manager import login_manager
 from database import db
 
 from models.user import User
+from models.password import UserPass
+from models.customer import Customer
 
 @pytest.fixture()
 def app():
     app = create_app('sqlite://')
-
-    db.init_app(app)
 
     login_manager.init_app(app)
 
     with app.app_context():
         db.create_all()
 
+        passwrd = UserPass(
+            password_hash=generate_password_hash('testpassword')
+        )
+
+        db.add(passwrd)
+        db.commit()
+
         test_user = User(
             username='testuser',
             email='test@email.com',
-            password=generate_password_hash('testpassword')
+            password_id=passwrd.id
         )
 
-        db.session.add(test_user)
-        db.session.commit()
+        db.add(test_user)
+
+        test_customer = Customer(
+            name='John Doe',
+            email='john.doe@email.com'
+        )
+
+        db.add(test_customer)
+        db.commit()
 
     yield app
 

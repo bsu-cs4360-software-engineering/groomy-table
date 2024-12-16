@@ -7,8 +7,8 @@ def test_create_customer(database):
         phone_number='123-456-7890'
     )
 
-    database.session.add(customer)
-    database.session.commit()
+    database.add(customer)
+    database.commit()
 
     assert customer.id is not None
     assert customer.name == 'John Doe'
@@ -20,8 +20,16 @@ def test_create_customer_optional_phone(database):
         email='john.doe@email.org'
     )
 
-    database.session.add(customer)
-    database.session.commit()
+    database.add(customer)
+    database.commit()
 
     assert customer.id is not None
     assert customer.name == 'John Doe'
+    assert customer.phone_number is None
+
+def test_query_existing_customer(database):
+    customer = database.query(Customer).first()
+
+    assert customer is not None
+    assert customer.name == 'John Doe'
+    assert customer.email == 'john.doe@email.com'
