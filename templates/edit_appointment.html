@@ -1,43 +1,81 @@
-{% extends 'base.html' %}
+{% extends 'base-dash.html' %}
 
 {% block head %}
     <title>Edit Appointment</title>
+    <style>
+        @media (max-width: 768px) {
+            .mobile-dash-nav {
+                display: block;
+            }
+
+            .mobile-nav {
+                display: none;
+            }
+        }
+    </style>
 {% endblock %}
 
-{% block nav %}
-    <li><a href="{{ url_for('dash.dashboard') }}">Dashboard</a></li>
-    <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
-{% endblock %}
-
-{% block content %}
-<section>
-    <h2>Edit Appointment</h2>
-    <form method="POST">
-        <label for="client">Client:</label>
-        <input type="text" id="client" name="client" value="{{ appointment.customer.name }}">
-
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" value="{{ appointment.customer.email }}">
-
-        <label for="number">Number:</label>
-        <input type="tel" id="number" name="number" value="{{ appointment.customer.phone_number if appointment.customer.phone_number else 'No phone number available' }}">
-
-        <label for="address">Address:</label>
-        <input type="text" id="address" name="address" value="{{ appointment.customer.places[0].address if appointment.customer.places else 'No address available' }}">
-
-        <label for="date">Date:</label>
-        <input type="date" id="date" name="date" value="{{ appointment.date }}" required>
-
-        <label for="time">Time:</label>
-        <input type="time" id="time" name="time" value="{{ appointment.time.strftime('%H:%M') }}" required>
-
-        <label>Notes:</label>
-        {% for note in appointment.note_links %}
-            <textarea name="notes" rows="3" placeholder="Enter note">{{ note.note.content }}</textarea><br>
-        {% endfor %}
-        <textarea name="notes" rows="3" placeholder="New note"></textarea><br>
-
-        <button type="submit">Save Changes</button>
+{% block main %}
+<section class="flex-column">
+    <div class="section-header">
+        <h1>Edit Appointment: {{ appointment.customer.name }}</h1>
+    </div>
+    <form class="section-form flex-column" id="appointmenet-form" method="post">
+        <table class="section-table">
+            <tr>
+                <td><strong>Name</strong></td>
+                <td class="editable-field">
+                    <label class="editable-text" for="name">{{ appointment.customer.name }}</label>
+                    <input class="editable-input" type="text" id="name" name="name" value="{{ appointment.customer.name }}" readonly>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Email</strong></td>
+                <td class="editable-field">
+                    <label class="editable-text" for="email">{{ appointment.customer.email }}</label>
+                    <input class="editable-input" type="text" id="email" name="email" value="{{ appointment.customer.email }}" readonly>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Number</strong></td>
+                <td class="editable-field">
+                    <label class="editable-text" for="number">{{ appointment.customer.phone_number if appointment.customer.phone_number else 'No phone number available.' }}</label>
+                    <input class="editable-input" type="tel" id="number" name="number" value="{{ appointment.customer.phone_number if appointment.customer.phone_number }}" readonly>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Address</strong></td>
+                <td class="editable-field">
+                    <label class="editable-text" for="address">{{ appointment.customer.places[0].address }}</label>
+                    <input class="editable-input" type="text" id="address" name="address" value="{{ appointment.customer.places[0].address }}" readonly>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Date</strong></td>
+                <td class="editable-field">
+                    <label class="editable-text" for="date" onclick="enableEdit('date')">{{ appointment.date }}</label>
+                    <input class="editable-input" type="date" id="date" name="date" value="{{ appointment.date }}" onblur="disableEdit('date')">
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Time</strong></td>
+                <td class="editable-field">
+                    <label class="editable-text" for="time" onclick="enableEdit('time')">{{ appointment.time.strftime('%H:%M %p') }}</label>
+                    <input class="editable-input" type="time" id="time" name="time" value="{{ appointment.time.strftime('%H:%M') }}" onblur="disableEdit('time')">
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Notes</strong></td>
+                <td>
+                    {% for note in appointment.note_links %}
+                        <textarea name="notes" rows="3" placeholder="Enter note">{{ note.note.content }}</textarea><br>
+                    {% endfor %}
+                    <textarea name="notes" rows="3" placeholder="New note"></textarea><br>
+                </td>
+            </tr>
+        </table>
+        <button class="section-form-submit" type="submit">Save</button>
     </form>
 </section>
+<script src="{{ url_for('static', filename='js/formEdit.js') }}"></script>
 {% endblock %}

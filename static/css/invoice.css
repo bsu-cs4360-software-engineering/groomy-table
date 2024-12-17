@@ -1,0 +1,149 @@
+:root {
+    --primary: #7d2ecc;
+    --highlight: #9760ce;
+    --black: #101010;
+    --white: #fff;
+
+    --clear-border: 1px solid rgba(255, 255, 255, 0.3);
+    --border-radius: 20px;
+    --grey-background: rgba(145, 141, 141, 0.1);
+    --dark-grey-background: #dfdddd;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    
+    --text: #3a4f66;
+
+    --footer-box-shadow: 0px 30px 50px rgba(0, 0, 0, 0.1);
+    --container-width: min(100%, calc(90vw - 0px * 2));
+    --container-max-width: 1290px;
+    --footer-text: #3a4f66;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 80vw;
+    margin: 20px auto;
+    align-items: start;
+    gap: 1em;
+}
+
+.invoice-container,
+.services-and-card {
+    padding: 1em;
+}
+
+.invoice-title {
+    padding-left: 10%;
+    text-align: left;
+    font-size: 5em;
+    color: var(--primary);
+}
+
+.grid-container div {
+    padding-bottom: 2em;
+}
+
+/* .grid-container div h2 {
+    font-size: xx-large;
+    font-weight: lighter;
+} */
+
+/* .grid-container div p {
+    font-size: x-large;
+} */
+
+.centered-line {
+    margin: 20px auto 0;
+    border-top: 2px solid #333;
+    width: 80%;
+}
+
+.services-and-card h2 {
+    text-align: center;
+}
+
+.services-and-card form {
+    margin: 20px auto;
+}
+
+.payment-container {
+    padding-top: 15%;
+}
+
+.services-container {
+    margin: 20px;
+    font-family: Arial, sans-serif;
+}
+
+#selected-services {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#selected-services th, 
+#selected-services td {
+    padding: 10px;
+    text-align: center;
+}
+
+#selected-services th {
+    background-color: var(--primary);
+    color: #fff;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #e2dcff;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #ffffff;
+}
+
+#total-container {
+    margin-top: 20px;
+    font-size: 1.2em;
+}
+
+button {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: var(--highlight);
+}
+
+
+.logo {
+    margin-top: 45%;
+    display: flex;
+    font-family: 'Arial', sans-serif;
+    text-transform: uppercase;
+    user-select: none;
+    color: var(--text);
+    column-gap: 0;
+}
+
+.logo h1 {
+    font-size: 50px;
+    font-weight: lighter;
+    color: inherit;
+}
+
+.logo img {
+    width: 7%;
+    height: 7%;
+}
+
+.logo .left-paw {
+    margin-top: 15px;
+}
+
+.logo .right-paw {
+    margin-top: 25px;
+}

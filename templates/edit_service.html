@@ -1,42 +1,5 @@
 {% extends 'base-dash.html' %}
 
-{% block head %}
-<style>
-    .editable-text {
-        cursor: pointer;
-    }
-
-    .editable-input {
-        display: inline-block;
-        width: 100%;
-        padding: 5px;
-        border: 1px solid #000;
-        border-radius: 4px;
-        display: none;
-    }
-
-    textarea {
-        width: 100%;
-        resize: none;
-        background-color: inherit;
-        outline: none;
-        border: none;
-        font-family: inherit;
-        font-size: inherit;
-        line-height: inherit;
-    }
-
-    /* Show the input only when it is active */
-    .editable-text:focus {
-        display: none;
-    }
-
-    .editable-input:focus {
-        background-color: inherit;
-    }
-</style>
-{% endblock %}
-
 {% block main %}
 <section class="flex-column">
     <div class="section-header">
@@ -51,14 +14,14 @@
                     <input type="text" class="editable-input" id="name" name="name" value="{{ service.name }}" onblur="disableEdit('name')">
                 </td>
             </tr>
-            <tr class="editable-field">
+            <tr>
                 <td><strong>Description</strong></td>
                 <td class="editable-field">
                     <label class="editable-text" for="description" onclick="enableEdit('description')">{{ service.description }}</label>
                     <input class="editable-input" id="description" name="description" value="{{ service.description }}" onblur="disableEdit('description')">
                 </td>
             </tr>
-            <tr class="editable-field">
+            <tr>
                 <td><strong>Price</strong></td>
                 <td class="editable-field">
                     <label class="editable-text" for="price" onclick="enableEdit('price')">{{ service.price }}</label>
@@ -86,30 +49,5 @@
         <button class="section-form-submit" type="submit">Save</button>
     </form>
 </section>
-
-<script>
-    function enableEdit(field) {
-        const label = document.querySelector(`label[for=${field}]`);
-        const input = document.getElementById(field);
-
-        // Hide the text and show the input
-        label.style.display = "none";
-        input.style.display = "inline-block";
-
-        // Focus the input to allow immediate editing
-        input.focus();
-    }
-
-    function disableEdit(field) {
-        const label = document.querySelector(`label[for=${field}]`);
-        const input = document.getElementById(field);
-
-        // Hide the input and show the text again
-        label.style.display = "inline-block";
-        input.style.display = "none";
-
-        // Update the text with the new value from the input
-        label.innerText = input.value;
-    }
-</script>
+<script src="{{ url_for('static', filename='js/formEdit.js') }}"></script>
 {% endblock %}

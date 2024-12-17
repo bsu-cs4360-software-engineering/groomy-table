@@ -1,6 +1,7 @@
 import stripe
 from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
+from sqlalchemy.orm import joinedload
 
 from datetime import datetime, time, timedelta
 
@@ -11,6 +12,8 @@ from models.place import Place
 from models.note import Note
 from models.note_link import NoteLink
 from models.appointment_form import AppointmentForm
+from models.invoice import Invoice
+from models.service import Service
 
 appts = Blueprint('appts', __name__)
 
@@ -44,7 +47,7 @@ def appointments():
             'longitude': longitude
         }
 
-        return redirect(url_for('appts.payment'))
+        return redirect(url_for('appts.invoice'))
     
     return render_template('appointments.html', form=form)
 
@@ -56,7 +59,7 @@ def available_slots():
     date = datetime.strptime(date_str, '%Y-%m-%d').date()
 
     # Fetch appointments for the selected date
-    appointments = Appointment.query.filter_by(date=date).all()
+    appointments = db.query(Appointment).filter_by(date=date).all()
 
     # Create a list of all possible time slots (9 AM to 5 PM)
     time_slots = [time(hour=hour) for hour in range(9, 18, 2)]
@@ -70,6 +73,36 @@ def available_slots():
         })
 
     return jsonify(available_slots)
+
+@appts.route('/invoice', methods=['GET', 'POST'])
+def invoice():
+    appointment_data = session.get('appointment_data')
+
+    if not appointment_data:
+        return redirect(url_for('appts.appointments'))
+
+    invoice_id = session.get('invoice_id')
+    services = db.query(Service).options(
+        joinedload(Service.note_links)
+    ).all()
+    
+
+    if invoice_id:
+        invoice_to_display = db.query(Invoice).get_or_404(invoice_id)
+        invoice_to_display.customer_name = appointment_data['name']
+        invoice_to_display.customer_address = appointment_data['street_address']
+        db.commit()
+    else:
+        new_invoice = Invoice(
+            customer_name=appointment_data['name'],
+            customer_address=appointment_data['street_address'],
+        )
+        db.add(new_invoice)
+        db.commit()
+        session['invoice_id'] = new_invoice.id
+        invoice_to_display = new_invoice
+
+    return render_template('invoice.html', appointment_data=appointment_data, invoice_info=invoice_to_display, services=services)
 
 @appts.route('/payment', methods=['GET', 'POST'])
 def payment():
@@ -115,7 +148,7 @@ def confirmation():
 
     try:
         # Check if customer already exists (based on email)
-        customer = Customer.query.filter_by(email=appointment_data['email']).first()
+        customer = db.query(Customer).filter_by(email=appointment_data['email']).first()
 
         if not customer:
             customer = Customer(
@@ -124,8 +157,8 @@ def confirmation():
                 phone_number=appointment_data['phone_number']
             )
 
-            db.session.add(customer)
-            db.session.commit()
+            db.add(customer)
+            db.commit()
 
         new_place = Place(
             address=appointment_data['street_address'],
@@ -134,7 +167,7 @@ def confirmation():
             customer_id=customer.id # Associate place with existing/new customer
         )
 
-        db.session.add(new_place)
+        db.add(new_place)
 
         new_appointment = Appointment(
             customer_id=customer.id,
@@ -145,8 +178,8 @@ def confirmation():
             payment_intent_id=appointment_data['payment_intent_id']
         )
 
-        db.session.add(new_appointment)
-        db.session.commit()
+        db.add(new_appointment)
+        db.commit()
 
         if appointment_data['notes']:
             new_note = Note(
@@ -154,8 +187,8 @@ def confirmation():
                 created_by=customer.name
             )
 
-            db.session.add(new_note)
-            db.session.commit()
+            db.add(new_note)
+            db.commit()
 
             note_link = NoteLink(
                 note_id=new_note.id,
@@ -163,11 +196,11 @@ def confirmation():
                 appointment_id=new_appointment.id
             )
 
-            db.session.add(note_link)
+            db.add(note_link)
 
-        db.session.commit()
+        db.commit()
     except SQLAlchemyError as e:
-        db.session.rollback()
+        db.rollback()
 
     return render_template('confirmation.html', appointment=appointment_data)
 

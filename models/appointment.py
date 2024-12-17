@@ -21,3 +21,8 @@ class Appointment(db.Model):
 
     customer = db.relationship('Customer', back_populates='appointments')
     note_links = db.relationship('NoteLink', back_populates='appointment', cascade='all, delete-orphan')
+
+    def set_status(self, status):
+        if status not in AppointmentStatus:
+            raise ValueError(f"Invalid status: {status}")
+        self.status = status

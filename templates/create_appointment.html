@@ -1,46 +1,9 @@
-{% extends 'base.html' %}
+{% extends 'base-dash.html' %}
 {% block head %}
     <title>Create Appointment - Groomy</title>
-    <script async
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB18HHJbiZIs6cT4GKPW0Vc_e6WQci8-ZE&loading=async&libraries=places">
-    </script>
     <style>
         .slot-label {
-            display: block;
-            padding: 5px;
-            border: 2px solid var(--black);
-            color: var(--black);
-            box-shadow: var(--box-shadow);
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .slot-label input[type="radio"] {
-            display: none;
-        }
-
-        .slot-label:hover {
-            backdrop-filter: blur(10px);
-        }
-
-        .slot-label:has(input[type="radio"]:disabled),
-        .slot-label:has(input[type="radio"]:disabled):hover {
-            border: none;
-            backdrop-filter: none;
-            box-shadow: none;
-            cursor: default;
-        }
-
-        .slot-label:has(input[type="radio"]:checked) {
-            background: var(--dark-grey-background);
-            border: 2px solid var(--highlight);
-        }
-
-        .form-container {
-            display: flex;
-            flex-direction: row;
-            column-gap: 20px;
-            align-items: flex-start;
+            margin-right: 25px;
         }
 
         .suggestion-list {
@@ -48,11 +11,8 @@
             max-height: 200px;
             overflow-y: auto;
             background: #fff;
-            position: absolute;
             z-index: 9999;
             width: 100%;
-            border-radius: var(--border-radius);
-            top: 100%;
         }
         .suggestion-item {
             padding: 5px;
@@ -61,51 +21,77 @@
         .suggestion-item:hover {
             background-color: #f1f1f1;
         }
+
+        @media (max-width: 768px) {
+            .mobile-dash-nav {
+                display: block;
+            }
+
+            .mobile-nav {
+                display: none;
+            }
+        }
     </style>
 {% endblock %}
 
-{% block nav %}
-    <li><a href="{{ url_for('dash.dashboard') }}">Dashboard</a></li>
-    <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
-{% endblock %}
-
-{% block content %}
-    <section>
-        <h2>Contact Information</h2>
-        <div class="form-container">
-            <form id="booking_form" method="post" action="{{ url_for('dash.create_appointment') }}">
-                {{ form.hidden_tag() }} <!-- CSRF protection -->
-
-                <div style="display: flex; flex-direction: column; position: relative">
-                    <label for="name">Full Name:</label>
-                    {{ form.name(size=32) }}
+{% block main %}
+<section class="flex-column">
+    <div class="section-header">
+        <h1>Create Appointment</h1>
+    </div>
+    <form class="section-form flex-column" id="service-form" method="post">
+        <table class="section-table">
+            <tr>
+                <td><strong>Full Name</strong></td>
+                <td class="editable-field">
+                    <input class="editable-input" type="text" id="name" name="name">
                     <!-- Autocomplete suggestions -->
                     <div id="suggestions" class="suggestion-list" style="display: none;"></div>
-                </div>
-
-                <label for="email">Email:</label>
-                {{ form.email(size=32) }}
-
-                <label for="phone_number">Phone Number:</label>
-                {{ form.phone_number(size=32, pattern='[0-9]{3}-[0-9]{3}-[0-9]{4}', placeholder='123-456-7890') }}
-
-                <label for="street_address">Street Address:</label>
-                {{ form.street_address(size=32, id='street_address') }}
-
-                <input type="hidden" id="latitude" name="latitude">
-                <input type="hidden" id="longitude" name="longitude">
-
-                <label for="date">Select Date:</label>
-                {{ form.date() }}
-
-                <label for="notes">Notes:</label>
-                {{ form.notes(size=32) }}
-
-                <button type="submit" id="submit">Create</button>
-            </form>
-            <div id="time_slots"></div>
-        </div>
-    </section>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Email</strong></td>
+                <td class="editable-field">
+                    <input class="editable-input" type="text" id="email" name="email" placeholder="john.doe@email.com">
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Phone Number</strong></td>
+                <td class="editable-field">
+                    <input class="editable-input" type="tel" id="phone_number" name="phone_number" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="123-456-7890">
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Street Address</strong></td>
+                <td class="editable-field">
+                    <input class="editable-input" type="text" id="street_address" name="street_address">
+                    <input type="hidden" id="latitude" name="latitude">
+                    <input type="hidden" id="longitude" name="longitude">
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Date</strong></td>
+                <td class="editable-field">
+                    <input class="editable-input" type="date" id="date" name="date">
+                    <input type="hidden" id="time" name="time">
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Time</strong></td>
+                <td>
+                    <div id="time_slots"></div>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Notes</strong></td>
+                <td>
+                    <textarea name="notes" rows="3" placeholder="New note"></textarea><br>
+                </td>
+            </tr>
+        </table>
+        <button class="section-form-submit" type="submit">Create</button>
+    </form>
+</section>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Handle customer search and autofill
@@ -163,6 +149,8 @@
             const autocomplete = new google.maps.places.Autocomplete(input);
             autocomplete.setFields(['address_component', 'geometry']);
 
+            input.placeholder = '';
+
             autocomplete.addListener('place_changed', function() {
                 const place = autocomplete.getPlace();
 
@@ -212,7 +200,7 @@
                         label.appendChild(checkbox);
                         label.appendChild(document.createTextNode(slot.time));
 
-                        if (slot.booked) {
+                        if (slot.status == 'BOOKED') {
                             label.style.textDecoration = 'line-through';
                             checkbox.disabled = true;
                         }
@@ -236,5 +224,7 @@
                 }
             });
         }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB18HHJbiZIs6cT4GKPW0Vc_e6WQci8-ZE&loading=async&libraries=places&callback=initAutocomplete" async defer>
     </script>
 {% endblock %}

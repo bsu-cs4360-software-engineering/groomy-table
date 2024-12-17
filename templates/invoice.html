@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% block head %}
+    <title>Invoice - Groomy</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/invoice.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/payment.css') }}">
+{% endblock %}
+
+{% block nav %}
+    <li><a class="start-home" href="/">Home</a></li>
+    <li><a href="{{ url_for('appts.appointments') }}">Book Appointment</a></li>
+    <li><a href="#">About Us</a></li>
+    <li><a href="#">Contact Us</a></li>   
+{% endblock %}
+
+{% block content %}
+    <h1 class="invoice-title">INVOICE</h1>
+    <div class="centered-line"></div>
+    <section class = 'grid-container'>
+        <div class ="invoice-container"> <!-- Invoice -->
+            <div>
+                <h2><b>ID:</b> #{{ invoice_info.id }}</h2>
+            </div>
+            <div>
+                <h2><b>Date:</b> {{ invoice_info.issue_date }} UTC</h2>
+            </div>
+            <div>
+                <h2><b>From:</b></h2>
+                <p>{{ invoice_info.user.username }}</p>
+                <p>{{ invoice_info.provider_address }}</p>
+            </div>
+            <div>
+                <h2><b>To:</b></h2>
+                <p>{{ invoice_info.customer_name }}</p>
+                <p>{{ invoice_info.customer_address }}</p>
+            </div>
+            <div class="logo">
+                <h1>Gr</h1>
+                <img class="left-paw" src="{{ url_for('static', filename='img/paw-logo-left.svg') }}" alt="Left Paw">
+                <img class="right-paw" src="{{ url_for('static', filename='img/paw-logo-right.svg') }}" alt="Right Paw">
+                <h1>my</h1>
+            </div>
+        </div>
+        <div class = "services-and-card"> <!-- Payment Card and Service Table -->
+            <h2><b>Choose Services</b></h2>
+            <div class="services-container">
+                <div id="add-service-container">
+                    <label for="service-select">Choose a service:</label>
+                    <select id="service-select">
+                        {% for service in services %}
+                        <option value="{{ service.id }}" data-price="{{ service.price }}">
+                            {{ service.name }} - ${{ service.price }}
+                        </option>
+                        {% endfor %}
+                    </select>
+            
+                    <label for="quantity-input">Quantity:</label>
+                    <input type="number" id="quantity-input" min="1" value="1" max="3">
+                    <button id="add-service">Add Service</button>
+                </div>
+                <table id="selected-services" class="service-table">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows dynamically added via JavaScript -->
+                    </tbody>
+                </table>
+                <div id="total-container">
+                    <strong>Total Cost: $<span id="total-amount">0.00</span></strong>
+                </div>
+                <script src="{{ url_for('static', filename='js/invoice.js') }}"></script>
+                <div class="payment-container">
+                    <h2><b>Payment Method</b></h2> <!-- Card= -->
+                    <form id="payment_form" method="post">
+                        <div id="payment_error"></div> <!-- Error message display -->
+
+                        <div id="cnumdiv" autocomplete="off">
+                            <label for="card-number-element">Card Number</label>
+                            <div id="card-number-element" class="StripeElement"></div>
+                        </div>
+                    
+                        <div class="bottomfield">
+                            <div id="namediv" autocomplete="off">
+                                <label for="card-name">Cardholder Name</label>
+                                <input autocomplete="off" id="card-name" type="text" placeholder="James Bond" required>
+                            </div>
+                            <div id="expdatediv" autocomplete="off">
+                                <label for="card-expiry-element">Expiration Date</label>
+                                <div id="card-expiry-element" class="StripeElement"></div>
+                            </div>
+                            <div id="cvcdiv" autocomplete="off">
+                                <label for="card-cvc-element">CVC</label>
+                                <div id="card-cvc-element" class="StripeElement"></div>
+                            </div>
+                        </div>
+                    
+                        <button type="submit" form="payment_form">Book Appointment</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        const stripe = Stripe('pk_test_51QDTQWJi74T5Aw7FKv8OFdXH8y1XC70ieQkvqsAVbq2gD5hB23VAxFvdyAJllZKTvlLh6ihO38D6l79em9HeyodJ00WgtKXJ8e');
+        const elements = stripe.elements();
+
+        // Create separate Stripe elements for card number, expiry, and CVC
+        const cardNumberElement = elements.create('cardNumber');
+        const cardExpiryElement = elements.create('cardExpiry');
+        const cardCvcElement = elements.create('cardCvc');
+
+        // Mount the elements to the DOM
+        cardNumberElement.mount('#card-number-element');
+        cardExpiryElement.mount('#card-expiry-element');
+        cardCvcElement.mount('#card-cvc-element');
+
+        document.getElementById('payment_form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const {error, paymentMethod} = await stripe.createPaymentMethod({
+                type: 'card',
+                card: cardNumberElement,
+            });
+
+            if (error) {
+                document.getElementById('payment_error').innerText = error.message;
+            } else {
+                const response = await fetch('/payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({payment_method_id: paymentMethod.id})
+                });
+
+                const result = await response.json();
+
+                if (result.redirect_url) {
+                    window.location.href = result.redirect_url;
+                } else {
+                    const result = await response.json();
+                    document.getElementById('payment_error').innerText = result.message;
+                }
+            }
+        });
+    </script>
+{% endblock %}

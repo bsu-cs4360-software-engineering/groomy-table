@@ -1,7 +1,6 @@
 import stripe
 from flask import Blueprint, jsonify, render_template, request, redirect, session, url_for
 from flask_login import login_required, current_user
-from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import SQLAlchemyError
 
 from datetime import datetime, timedelta
@@ -14,6 +13,7 @@ from models.place import Place
 from models.note_link import NoteLink
 from models.appointment_form import AppointmentForm
 from models.service import Service
+from models.invoice import Invoice
 
 dash = Blueprint('dash', __name__)
 
@@ -27,18 +27,17 @@ def dashboard():
 def appointments():
     now = datetime.now().date()
 
-    appointments = Appointment.query.options(
-        joinedload(Appointment.customer) # Load the associated customer
-        .joinedload(Customer.places), # Load the Places associated with the Customer
-        joinedload(Appointment.note_links) # Load NoteLinks, which access Notes
-    ).order_by(Appointment.date, Appointment.time).all()
+    appointments = db.query(Appointment).options(
+        db.joinedload((Appointment.customer, Customer.places)), # Load the Places associated with the Customer
+        db.joinedload(Appointment.note_links) # Load NoteLinks, which access Notes
+    ).filter(Appointment.status is not AppointmentStatus.DELETED).order_by(Appointment.date, Appointment.time).all()
 
-    # Soft delete past appointments
     for appointment in appointments:
+        # Soft delete past appointments
         if appointment.date < now:
-            appointment.status = AppointmentStatus.COMPLETE
+            appointment.set_status(AppointmentStatus.COMPLETE)
 
-    db.session.commit()
+    db.commit()
 
     valid_appointments = [appt for appt in appointments if appt.date >= now]
 
@@ -51,8 +50,8 @@ def appointments():
 
     appointments_today = len([appt for appt in valid_appointments if appt.date == now])
 
-    customers = Customer.query.options(
-        joinedload(Customer.places)
+    customers = db.query(Customer).options(
+        db.joinedload(Customer.places)
     ).all()
 
     return render_template('manage_appointments.html',
@@ -64,14 +63,34 @@ def appointments():
 @dash.route('/dashboard/services')
 @login_required
 def services():
-    services = Service.query.options(
-        joinedload(Service.note_links)
+    services = db.query(Service).options(
+        db.joinedload(Service.note_links)
     ).all()
 
     valid_services = [service for service in services if service.deleted != True]
 
     return render_template('manage_services.html',
                             services=valid_services,
+                            user=current_user)
+
+@dash.route('/dashboard/customers')
+@login_required
+def customers():
+    customers = db.query(Customer).options(
+        db.joinedload(Customer.note_links)
+    ).all()
+
+    return render_template('view_customers.html',
+                            customers=customers,
+                            user=current_user)
+
+@dash.route('/dashboard/invoices')
+@login_required
+def invoices():
+    invoices = db.query(Invoice).order_by(Invoice.issue_date).all()
+
+    return render_template('view_invoices.html',
+                            invoices=invoices,
                             user=current_user)
 
 @dash.route('/dashboard/add_service', methods=['GET', 'POST'])
@@ -86,8 +105,8 @@ def new_service():
             is_package='is_package' in request.form
         )
 
-        db.session.add(service)
-        db.session.commit()
+        db.add(service)
+        db.commit()
 
         return redirect(url_for('dash.services'))
     
@@ -97,8 +116,8 @@ def new_service():
 @dash.route('/dashboard/edit_service/<int:service_id>', methods=['GET', 'POST'])
 @login_required
 def edit_service(service_id):
-    service = Service.query.options(
-        joinedload(Service.note_links).joinedload(NoteLink.note)
+    service = db.query(Service).options(
+        db.joinedload(Service.note_links).joinedload(NoteLink.note)
     ).get(service_id)
 
     if not service:
@@ -130,8 +149,8 @@ def edit_service(service_id):
                         created_by=current_user.username
                     )
 
-                    db.session.add(new_note)
-                    db.session.commit()
+                    db.add(new_note)
+                    db.commit()
 
                     new_note_link = NoteLink(
                         note_id=new_note.id,
@@ -142,7 +161,7 @@ def edit_service(service_id):
 
                     service.note_links.append(new_note_link)
 
-        db.session.commit()
+        db.commit()
         return redirect(url_for('dash.services'))
     
     return render_template('edit_service.html', 
@@ -153,11 +172,11 @@ def edit_service(service_id):
 @login_required
 def delete_service(service_id):
     if request.method == 'POST':
-        service = Service.query.get(service_id)
+        service = db.query(Service).get(service_id)
 
         if service:
             service.deleted = True
-            db.session.commit()
+            db.commit()
 
             return redirect(url_for('dash.services'))
         else:
@@ -166,15 +185,24 @@ def delete_service(service_id):
 @dash.route('/dashboard/edit_customer/<int:customer_id>', methods=['GET', 'POST'])
 @login_required
 def edit_customer(customer_id):
-    customer = Customer.query.options(
-        joinedload(Customer.places),
-        joinedload(Customer.note_links).joinedload(NoteLink.note)
+    customer = db.query(Customer).options(
+        db.joinedload(Customer.places),
+        db.joinedload(Customer.note_links).joinedload(NoteLink.note)
     ).get(customer_id)
 
     if not customer:
         return "Customer not found", 404
     
     if request.method == 'POST':
+        customer.name = request.form['name']
+        customer.email = request.form['email']
+        customer.phone_number = request.form['phone_number']
+        customer.places[0].address = request.form['street_address']
+        customer.places[0].longitude = request.form['longitude']
+        customer.places[0].latitude = request.form['latitude']
+
+        db.commit()
+
         existing_note_links = {note_link.note.id: note_link for note_link in customer.note_links}
         submitted_notes = request.form.getlist('notes')
 
@@ -194,8 +222,8 @@ def edit_customer(customer_id):
                         created_by='Admin'
                     )
 
-                    db.session.add(new_note)
-                    db.session.commit()
+                    db.add(new_note)
+                    db.commit()
 
                     new_note_link = NoteLink(
                         note_id=new_note.id,
@@ -205,7 +233,7 @@ def edit_customer(customer_id):
 
                     customer.note_links.append(new_note_link)
 
-        db.session.commit()
+        db.commit()
         return redirect(url_for('dash.dashboard'))
     
     return render_template('edit_customer.html', customer=customer)
@@ -213,9 +241,9 @@ def edit_customer(customer_id):
 @dash.route('/dashboard/edit_appointment/<int:appointment_id>', methods=['GET', 'POST'])
 @login_required
 def edit_appointment(appointment_id):
-    appointment = Appointment.query.options(
-        joinedload(Appointment.customer).joinedload(Customer.places),
-        joinedload(Appointment.note_links).joinedload(NoteLink.note)
+    appointment = db.query(Appointment).options(
+        db.joinedload(Appointment.customer).joinedload(Customer.places),
+        db.joinedload(Appointment.note_links).joinedload(NoteLink.note)
     ).get(appointment_id)
 
     if not appointment:
@@ -248,8 +276,8 @@ def edit_appointment(appointment_id):
                         created_by='Admin'
                     )
 
-                    db.session.add(new_note)
-                    db.session.commit()
+                    db.add(new_note)
+                    db.commit()
 
                     new_note_link = NoteLink(
                         note_id=new_note.id,
@@ -259,7 +287,7 @@ def edit_appointment(appointment_id):
 
                     appointment.note_links.append(new_note_link)
 
-        db.session.commit()
+        db.commit()
         return redirect(url_for('dash.dashboard'))
 
     return render_template('edit_appointment.html', appointment=appointment)
@@ -268,27 +296,27 @@ def edit_appointment(appointment_id):
 @login_required
 def delete_appointment(appointment_id):
     if request.method == 'POST':
-        appointment = Appointment.query.get(appointment_id)
+        appointment = db.query(Appointment).get(appointment_id)
 
         if appointment:
-            appointment.status = AppointmentStatus.DELETED
-            db.session.commit()
+            appointment.set_status(AppointmentStatus.DELETED)
+            db.commit()
 
-            return jsonify({'success': True}), 200
+            return redirect(url_for('dash.appointments'))
         else:
             return jsonify({'error': 'Appointment not found.'}), 404
 
 @dash.route('/dashboard/book_appointment/<int:appointment_id>', methods=['POST'])
 @login_required
 def book_appointment(appointment_id):
-    appointment = Appointment.query.get(appointment_id)
+    appointment = db.query(Appointment).get(appointment_id)
 
     if appointment.status != AppointmentStatus.OPEN:
         return jsonify({'error': 'Appointment not in an open state.'})
     
     # Mark appointment as accepted
-    appointment.status = AppointmentStatus.BOOKED
-    db.session.commit()
+    appointment.set_status(AppointmentStatus.BOOKED)
+    db.commit()
 
 @dash.route('/dashboard/search_customer')
 @login_required
@@ -299,7 +327,7 @@ def search_customer():
         return jsonify({'customers': []})
     
     # Find customers whose name contains the query (case-insensitive)
-    customers = Customer.query.filter(Customer.name.ilike(f'%{query}%')).all()
+    customers = db.query(Customer).filter(Customer.name.ilike(f'%{query}%')).all()
 
     customer_data = []
 
@@ -319,39 +347,37 @@ def search_customer():
 @dash.route('/dashboard/create_appointment', methods=['GET', 'POST'])
 @login_required
 def create_appointment():
-    form = AppointmentForm()
+    print('Pre-post')
 
-    if form.validate_on_submit():
-        if not form.time.data:
-            form.name.errors.append('Select a time.')
-            return render_template('create_appointment.html', form=form)
-        
-        if not _is_valid_date(form.date.data):
-            form.name.errors.append('Select a date between today and a month from now.')
-            return render_template('create_appointment.html', form=form)
-        
+    if request.method == 'POST':
+        print('Entering post')
         latitude = request.form.get('latitude')
         longitude = request.form.get('longitude')
 
         session['appointment_data'] = {
-            'name': form.name.data,
-            'email': form.email.data,
-            'phone_number': form.phone_number.data,
-            'street_address': form.street_address.data,
-            'date': form.date.data.isoformat(),
-            'time': form.time.data,
-            'notes': form.notes.data,
+            'name': request.form['name'],
+            'email': request.form['email'],
+            'phone_number': request.form['phone_number'],
+            'street_address': request.form['street_address'],
+            'date': request.form['date'],
+            'time': request.form['time'],
+            'notes': request.form['notes'],
             'latitude': latitude,
             'longitude': longitude
         }
 
+        print('Gathering Data')
+
         return redirect(url_for('dash.confirmation'))
     
-    return render_template('create_appointment.html', form=form)
+    return render_template('create_appointment.html',
+                            user=current_user)
 
 @dash.route('/dashboard/confirmation', methods=['GET'])
 @login_required
 def confirmation():
+    print('To Confirmation')
+
     appointment_data = session.pop('appointment_data', None)
 
     if not appointment_data:
@@ -362,7 +388,7 @@ def confirmation():
 
     try:
         # Check if customer already exists (based on email)
-        customer = Customer.query.filter_by(email=appointment_data['email']).first()
+        customer = db.query(Customer).filter_by(email=appointment_data['email']).first()
 
         if not customer:
             customer = Customer(
@@ -371,8 +397,8 @@ def confirmation():
                 phone_number=appointment_data['phone_number']
             )
 
-            db.session.add(customer)
-            db.session.commit()
+            db.add(customer)
+            db.commit()
 
         new_place = Place(
             address=appointment_data['street_address'],
@@ -381,7 +407,7 @@ def confirmation():
             customer_id=customer.id # Associate place with existing/new customer
         )
 
-        db.session.add(new_place)
+        db.add(new_place)
 
         new_appointment = Appointment(
             customer_id=customer.id,
@@ -391,8 +417,8 @@ def confirmation():
             status=AppointmentStatus.BOOKED
         )
 
-        db.session.add(new_appointment)
-        db.session.commit()
+        db.add(new_appointment)
+        db.commit()
 
         if appointment_data['notes']:
             new_note = Note(
@@ -400,8 +426,8 @@ def confirmation():
                 created_by=customer.name
             )
 
-            db.session.add(new_note)
-            db.session.commit()
+            db.add(new_note)
+            db.commit()
 
             note_link = NoteLink(
                 note_id=new_note.id,
@@ -409,11 +435,11 @@ def confirmation():
                 appointment_id=new_appointment.id
             )
 
-            db.session.add(note_link)
+            db.add(note_link)
 
-        db.session.commit()
+        db.commit()
     except SQLAlchemyError as e:
-        db.session.rollback()
+        db.rollback()
 
     return render_template('dash_confirmation.html', appointment=appointment_data)
 
