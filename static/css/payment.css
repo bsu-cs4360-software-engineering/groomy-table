@@ -1,0 +1,166 @@
+:root {
+  --primary: #7d2ecc;
+  --highlight: #9760ce;
+  --black: #101010;
+  --background: #fcfcfc;
+
+  --clear-border: 1px solid rgba(255, 255, 255, 0.3);
+  --border-radius: 20px;
+  --grey-background: rgba(145, 141, 141, 0.1);
+  --dark-grey-background: #dfdddd;
+  --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+/* General Form Styles */
+#payment_form {
+  background: var(--dark-grey-background);
+  backdrop-filter: blur(35px);
+  border-radius: var(--border-radius);
+  border: var(--clear-border);
+  box-shadow: var(--box-shadow);
+  padding: 30px;
+  position: relative;
+  margin-top: 50px;
+  width: 100%;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+/* Error Message */
+#payment_error {
+  color: red;
+}
+
+/* Label Styling */
+#payment_form label {
+  font-size: 14px;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+/* Card Input Styles */
+#card-name,
+#card-number-element,
+#card-expiry-element,
+#card-cvc-element {
+  font-size: 16px;
+  color: white;
+  background: transparent;
+  border: var(--clear-border);
+  padding: 8px;
+  margin-bottom: 10px;
+  width: 100%;
+  /* outline: 2px solid pink; */
+  transition: border-color 0.3s ease;
+  border-radius: 0;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 0px;
+  height: auto;
+  background-color: transparent;
+  backdrop-filter: blur(35px);
+  box-shadow: var(--box-shadow);
+ 
+}
+
+#card-name:focus,
+#card-number-element.StripeElement--focus,
+#card-expiry-element.StripeElement--focus,
+#card-cvc-element.StripeElement--focus {
+  border-bottom: 1px solid var(--highlight);
+}
+
+#card-name:hover,
+#card-number-element.StripeElement--hover,
+#card-expiry-element.StripeElement--hover,
+#card-cvc-element.StripeElement--hover {
+  border-bottom: var(--highlight);
+}
+
+/* Cardholder Name and Card Number Input */
+#card-name,
+#card-number-element {
+  background-color: rgba(0, 0, 0, 0.2); /* Slightly transparent background */
+  padding: 15px;
+  font-size: 18px;
+  /* border-radius: var(--border-radius); */
+  margin-bottom: 20px;
+}
+
+/* Expiry and CVC Fields */
+.bottomfield{
+  display: flex;
+  justify-content: space-between;
+}
+
+.bottomfield #card-expiry-element{
+  background-color: rgba(0, 0, 0, 0.2); /* Slightly transparent background */
+  padding: 15px;
+  font-size: 18px;
+  /* border-radius: var(--border-radius); */
+  margin-bottom: 20px;
+}
+.bottomfield #card-cvc-element {
+  background-color: rgba(0, 0, 0, 0.2); /* Slightly transparent background */
+  padding: 15px;
+  font-size: 18px;
+  /* border-radius: var(--border-radius); */
+  margin-bottom: 20px;
+}
+#cvcdiv {
+  width: 25%;
+}
+#expdatediv {
+  width: 25%;
+}
+#namediv {
+  width: 45%;
+}
+#card-name {
+  width: 100%;
+  font-size: 15px;
+  color: var(--black);
+  outline: none;
+  /* height: 49.8px; */
+}
+
+/* Submit Button Styling */
+#payment_form button {
+  background-color: var(--primary);
+  color: var(--background);
+  font-size: 15px;
+  padding: 10px 0;
+  width: 40%;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#payment_form button:hover {
+  background-color: var(--highlight);
+}
+
+/* Mobile-Friendly Adjustments */
+@media (max-width: 768px) {
+  #payment_form {
+    padding: 20px;
+    width: 90%;
+  }
+  
+  #payment_form h2 {
+    font-size: 22px;
+  }
+
+  /* .form-field input {
+    padding: 12px;
+  } */
+
+  #payment_form button {
+    padding: 12px 0;
+  }
+}
+

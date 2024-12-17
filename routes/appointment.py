@@ -59,7 +59,7 @@ def available_slots():
     date = datetime.strptime(date_str, '%Y-%m-%d').date()
 
     # Fetch appointments for the selected date
-    appointments = Appointment.query.filter_by(date=date).all()
+    appointments = db.query(Appointment).filter_by(date=date).all()
 
     # Create a list of all possible time slots (9 AM to 5 PM)
     time_slots = [time(hour=hour) for hour in range(9, 18, 2)]
@@ -148,7 +148,7 @@ def confirmation():
 
     try:
         # Check if customer already exists (based on email)
-        customer = Customer.query.filter_by(email=appointment_data['email']).first()
+        customer = db.query(Customer).filter_by(email=appointment_data['email']).first()
 
         if not customer:
             customer = Customer(
@@ -157,8 +157,8 @@ def confirmation():
                 phone_number=appointment_data['phone_number']
             )
 
-            db.session.add(customer)
-            db.session.commit()
+            db.add(customer)
+            db.commit()
 
         new_place = Place(
             address=appointment_data['street_address'],
@@ -167,7 +167,7 @@ def confirmation():
             customer_id=customer.id # Associate place with existing/new customer
         )
 
-        db.session.add(new_place)
+        db.add(new_place)
 
         new_appointment = Appointment(
             customer_id=customer.id,
@@ -178,8 +178,8 @@ def confirmation():
             payment_intent_id=appointment_data['payment_intent_id']
         )
 
-        db.session.add(new_appointment)
-        db.session.commit()
+        db.add(new_appointment)
+        db.commit()
 
         if appointment_data['notes']:
             new_note = Note(
@@ -187,8 +187,8 @@ def confirmation():
                 created_by=customer.name
             )
 
-            db.session.add(new_note)
-            db.session.commit()
+            db.add(new_note)
+            db.commit()
 
             note_link = NoteLink(
                 note_id=new_note.id,
@@ -196,11 +196,11 @@ def confirmation():
                 appointment_id=new_appointment.id
             )
 
-            db.session.add(note_link)
+            db.add(note_link)
 
-        db.session.commit()
+        db.commit()
     except SQLAlchemyError as e:
-        db.session.rollback()
+        db.rollback()
 
     return render_template('confirmation.html', appointment=appointment_data)
 

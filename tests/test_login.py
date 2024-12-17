@@ -7,7 +7,6 @@ def test_login_success(client, csrf_token):
 
     # Redirect to dashboard
     assert response.status_code == 302
-    assert b'<title>Dashboard - Groomy</title>'
 
 def test_login_with_email(client, csrf_token):
     response = client.post('/login', data={

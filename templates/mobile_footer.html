@@ -1,0 +1,32 @@
+<div class="mobile">
+    <div class="mobile-footer">
+        <div class="row">
+            <div class="header-logo">
+                <h2>Gr</h2>
+                <img class="left-paw" src="{{ url_for('static', filename='img/paw-logo-left.svg') }}" alt="Left Paw">
+                <img class="right-paw" src="{{ url_for('static', filename='img/paw-logo-right.svg') }}" alt="Right Paw">
+                <h2>my</h2>
+            </div>
+            <p>Groomy brings professional pet grooming right to your doorstep! We provide convenient, stress-free grooming for your furry friends at home. Fast, friendly, and reiable service&mdash;because your pets deserve the best!</p>
+        </div>
+        <div class="row">
+            <img class="icon" src="{{ url_for('static', filename='img/place.svg') }}">
+            <h2>Bemidji, MN</h2>
+        </div>
+        <div class="row">
+            <a href="mailto:user@groomy.com"><img class="icon" src="{{ url_for('static', filename='img/mail.svg') }}"></a>
+            <h2>user@groomy.com</h2>
+        </div>
+        <div class="row">
+            <img class="icon" src="{{ url_for('static', filename='img/phone.svg') }}">
+            <h2>+1 123-456-7890</h2>
+        </div>
+            <div class="sitemap">
+                <h2><strong>Sitemap</strong></h2>
+                <a href="{{ url_for('main.index') }}">Home</a>
+                <a href="#">About</a>
+                <a href="#">Contact</a>
+                <a href="{{ url_for('auth.login') }}">MyGroomy</a>
+        </div>
+    </div>
+</div>
