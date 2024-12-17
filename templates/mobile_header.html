@@ -20,10 +20,16 @@
     <div class="sidebar" id="sidebar">
         <h2>Navigation</h2>
         <ul>
-            <li><a class="start-home" href="/">Home</a></li>
-            <li><a href="{{ url_for('appts.appointments') }}">Book Appointment</a></li>
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Contact Us</a></li>
+            <div class="mobile-nav">
+                <li><a class="start-home" href="/">Home</a></li>
+                <li><a href="{{ url_for('appts.appointments') }}">Book Appointment</a></li>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Contact Us</a></li>
+            </div>
+            <div class="mobile-dash-nav">
+                <li><a href="{{ url_for('dash.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+            </div>
         </ul>
     </div>
 </div>

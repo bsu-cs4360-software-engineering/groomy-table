@@ -539,4 +539,8 @@ a:active, nav a:active, nav a.active:active {
     .sitemap a {
         color: #3a4f66;
     }
+
+    .mobile-dash-nav {
+        display: none;
+    }
 }
