@@ -562,3 +562,22 @@ a:active, nav a:active, nav a.active:active {
         display: none;
     }
 }
+
+.homepage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px; /* Adjust spacing between elements if needed */
+    padding-top: 10%;
+}
+
+.homepage h2 {
+    margin: 0; /* Remove default margins for proper alignment */
+    font-size: 12em;
+    font-weight: normal;
+}
+
+.homepage img {
+    width: 10em;
+    height: 10em;
+}
