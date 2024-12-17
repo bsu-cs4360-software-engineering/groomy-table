@@ -341,3 +341,39 @@ a.logout {
     font-size: inherit;
     font-family: inherit;
 }
+
+.editable-text {
+    cursor: pointer;
+}
+
+.editable-input {
+    display: inline-block;
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #000;
+    border-radius: 4px;
+}
+
+.editable-text + .editable-input {
+    display: none;
+}
+
+.section-table textarea {
+    width: 100%;
+    resize: none;
+    background-color: inherit;
+    outline: none;
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+/* Show the input only when it is active */
+.editable-text:focus {
+    display: none;
+}
+
+.editable-input:focus {
+    background-color: inherit;
+}

@@ -29,12 +29,12 @@ def appointments():
     appointments = db.query(Appointment).options(
         db.joinedload((Appointment.customer, Customer.places)), # Load the Places associated with the Customer
         db.joinedload(Appointment.note_links) # Load NoteLinks, which access Notes
-    ).order_by(Appointment.date, Appointment.time).all()
+    ).filter(Appointment.status is not AppointmentStatus.DELETED).order_by(Appointment.date, Appointment.time).all()
 
-    # Soft delete past appointments
     for appointment in appointments:
+        # Soft delete past appointments
         if appointment.date < now:
-            appointment.status = AppointmentStatus.COMPLETE
+            appointment.set_status(AppointmentStatus.COMPLETE)
 
     db.commit()
 
@@ -70,6 +70,17 @@ def services():
 
     return render_template('manage_services.html',
                             services=valid_services,
+                            user=current_user)
+
+@dash.route('/dashboard/customers')
+@login_required
+def customers():
+    customers = db.query(Customer).options(
+        db.joinedload(Customer.note_links)
+    ).all()
+
+    return render_template('view_customers.html',
+                            customers=customers,
                             user=current_user)
 
 @dash.route('/dashboard/add_service', methods=['GET', 'POST'])
@@ -173,6 +184,15 @@ def edit_customer(customer_id):
         return "Customer not found", 404
     
     if request.method == 'POST':
+        customer.name = request.form['name']
+        customer.email = request.form['email']
+        customer.phone_number = request.form['phone_number']
+        customer.places[0].address = request.form['street_address']
+        customer.places[0].longitude = request.form['longitude']
+        customer.places[0].latitude = request.form['latitude']
+
+        db.commit()
+
         existing_note_links = {note_link.note.id: note_link for note_link in customer.note_links}
         submitted_notes = request.form.getlist('notes')
 
@@ -269,10 +289,10 @@ def delete_appointment(appointment_id):
         appointment = db.query(Appointment).get(appointment_id)
 
         if appointment:
-            appointment.status = AppointmentStatus.DELETED
+            appointment.set_status(AppointmentStatus.DELETED)
             db.commit()
 
-            return jsonify({'success': True}), 200
+            return redirect(url_for('dash.appointments'))
         else:
             return jsonify({'error': 'Appointment not found.'}), 404
 
@@ -285,7 +305,7 @@ def book_appointment(appointment_id):
         return jsonify({'error': 'Appointment not in an open state.'})
     
     # Mark appointment as accepted
-    appointment.status = AppointmentStatus.BOOKED
+    appointment.set_status(AppointmentStatus.BOOKED)
     db.commit()
 
 @dash.route('/dashboard/search_customer')
@@ -317,39 +337,37 @@ def search_customer():
 @dash.route('/dashboard/create_appointment', methods=['GET', 'POST'])
 @login_required
 def create_appointment():
-    form = AppointmentForm()
+    print('Pre-post')
 
-    if form.validate_on_submit():
-        if not form.time.data:
-            form.name.errors.append('Select a time.')
-            return render_template('create_appointment.html', form=form)
-        
-        if not _is_valid_date(form.date.data):
-            form.name.errors.append('Select a date between today and a month from now.')
-            return render_template('create_appointment.html', form=form)
-        
+    if request.method == 'POST':
+        print('Entering post')
         latitude = request.form.get('latitude')
         longitude = request.form.get('longitude')
 
         session['appointment_data'] = {
-            'name': form.name.data,
-            'email': form.email.data,
-            'phone_number': form.phone_number.data,
-            'street_address': form.street_address.data,
-            'date': form.date.data.isoformat(),
-            'time': form.time.data,
-            'notes': form.notes.data,
+            'name': request.form['name'],
+            'email': request.form['email'],
+            'phone_number': request.form['phone_number'],
+            'street_address': request.form['street_address'],
+            'date': request.form['date'],
+            'time': request.form['time'],
+            'notes': request.form['notes'],
             'latitude': latitude,
             'longitude': longitude
         }
 
+        print('Gathering Data')
+
         return redirect(url_for('dash.confirmation'))
     
-    return render_template('create_appointment.html', form=form)
+    return render_template('create_appointment.html',
+                            user=current_user)
 
 @dash.route('/dashboard/confirmation', methods=['GET'])
 @login_required
 def confirmation():
+    print('To Confirmation')
+
     appointment_data = session.pop('appointment_data', None)
 
     if not appointment_data:

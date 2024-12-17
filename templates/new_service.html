@@ -1,41 +1,5 @@
 {% extends 'base-dash.html' %}
 
-{% block head %}
-<style>
-    .editable-text {
-        cursor: pointer;
-    }
-
-    .editable-input {
-        display: inline-block;
-        width: 100%;
-        padding: 5px;
-        border: 1px solid #000;
-        border-radius: 4px;
-    }
-
-    textarea {
-        width: 100%;
-        resize: none;
-        background-color: inherit;
-        outline: none;
-        border: none;
-        font-family: inherit;
-        font-size: inherit;
-        line-height: inherit;
-    }
-
-    /* Show the input only when it is active */
-    .editable-text:focus {
-        display: none;
-    }
-
-    .editable-input:focus {
-        background-color: inherit;
-    }
-</style>
-{% endblock %}
-
 {% block main %}
 <section class="flex-column">
     <div class="section-header">

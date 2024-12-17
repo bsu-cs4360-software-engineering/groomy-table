@@ -1,37 +1,80 @@
-{% extends 'base.html' %}
+{% extends 'base-dash.html' %}
 
 {% block head %}
-    <title>Edit Customer</title>
+    <title>Edit Customer - Groomy</title>
 {% endblock %}
 
-{% block nav %}
-    <li><a href="{{ url_for('dash.dashboard') }}">Dashboard</a></li>
-    <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
-{% endblock %}
-
-{% block content %}
-<section>
-    <h2>Edit Customer</h2>
-    <form method="POST">
-        <label for="client">Name:</label>
-        <input type="text" id="client" name="client" value="{{ customer.name }}">
-
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" value="{{ customer.email }}">
-
-        <label for="number">Number:</label>
-        <input type="tel" id="number" name="number" value="{{ customer.phone_number if customer.phone_number else 'No phone number available' }}">
-
-        <label for="address">Address:</label>
-        <input type="text" id="address" name="address" value="{{ customer.places[0].address if customer.places else 'No address available' }}">
-
-        <label>Notes:</label>
-        {% for note in customer.note_links %}
-            <textarea name="notes" rows="3" placeholder="Enter note">{{ note.note.content }}</textarea><br>
-        {% endfor %}
-        <textarea name="notes" rows="3" placeholder="New note"></textarea><br>
-
-        <button type="submit">Save Changes</button>
+{% block main %}
+<section class="flex-column">
+    <div class="section-header">
+        <h1>Edit Customer: {{ customer.name }}</h1>
+    </div>
+    <form class="section-form flex-column" id="customer-form" method="post">
+        <table class="section-table">
+            <tr>
+                <td><strong>Name</strong></td>
+                <td class="editable-field">
+                    <label class="editable-text" for="name" onclick="enableEdit('name')">{{ customer.name }}</label>
+                    <input type="text" class="editable-input" id="name" name="name" value="{{ customer.name }}" onblur="disableEdit('name')">
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Email</strong></td>
+                <td class="editable-field">
+                    <label class="editable-text" for="email" onclick="enableEdit('email')">{{ customer.email }}</label>
+                    <input type="email" class="editable-input" id="email" name="email" value="{{ customer.email }}" onblur="disableEdit('description')">
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Phone Number</strong></td>
+                <td class="editable-field">
+                    <label class="editable-text" for="phone_number" onclick="enableEdit('phone_number')">{{ customer.phone_number if customer.phone_number else 'No phone number on record.'}}</label>
+                    <input type="tel" class="editable-input" id="phone_number" name="phone_number" value="{{ customer.phone_number }}" onblur="disableEdit('phone_number')" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="123-456-7890">
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Address</strong></td>
+                <td class="editable-field">
+                    <label class="editable-text" for="street_address" onclick="enableEdit('street_address')">{{ customer.places[0].address }}</label>
+                    <input type="text" class="editable-input" id="street_address" name="street_address" value="{{ customer.places[0].address }}" onblur="disableEdit('street_address')">
+                    <input type="hidden" id="longitude" name="longitude" value="{{ customer.places[0].longitude }}">
+                    <input type="hidden" id="latitude" name="latitude" value="{{ customer.places[0].latitude }}">
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Notes</strong></td>
+                <td>
+                    {% for note in customer.note_links %}
+                        <textarea name="notes" rows="3" placeholder="Enter note">{{ note.note.content }}</textarea><br>
+                    {% endfor %}
+                    <textarea name="notes" rows="3" placeholder="New note"></textarea><br>
+                </td>
+            </tr>
+        </table>
+        <button class="section-form-submit" type="submit">Save</button>
     </form>
 </section>
+<script src="{{ url_for('static', filename='js/formEdit.js') }}"></script>
+<script>
+    // Google Places Autocomplete
+    function initAutocomplete() {
+        const input = document.getElementById('street_address');
+        const autocomplete = new google.maps.places.Autocomplete(input);
+        autocomplete.setFields(['address_component', 'geometry']);
+
+        input.placeholder = '';
+
+        autocomplete.addListener('place_changed', function() {
+            const place = autocomplete.getPlace();
+
+            if (place.geometry) {
+                // Set latitude and longitude fields
+                document.getElementById('latitude').value = place.geometry.location.lat();
+                document.getElementById('longitude').value = place.geometry.location.lng();
+            }
+        });
+    }
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB18HHJbiZIs6cT4GKPW0Vc_e6WQci8-ZE&loading=async&libraries=places&callback=initAutocomplete" async defer>
+</script>
 {% endblock %}

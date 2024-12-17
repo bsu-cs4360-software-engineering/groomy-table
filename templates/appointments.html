@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 {% block head %}
     <title>Book Appointment - Groomy</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB18HHJbiZIs6cT4GKPW0Vc_e6WQci8-ZE&loading=async&libraries=places&callback=initAutocomplete" async defer>
-    </script>
     <style>
         .time-slots {
             display: grid;
@@ -374,5 +372,7 @@
                 }
             }
         });
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB18HHJbiZIs6cT4GKPW0Vc_e6WQci8-ZE&loading=async&libraries=places&callback=initAutocomplete" async defer>
     </script>
 {% endblock %}
