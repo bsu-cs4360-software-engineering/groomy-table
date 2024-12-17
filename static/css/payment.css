@@ -94,6 +94,7 @@
 .bottomfield{
   display: flex;
   justify-content: space-between;
+  align-items: flex-end;
 }
 
 .bottomfield #card-expiry-element{

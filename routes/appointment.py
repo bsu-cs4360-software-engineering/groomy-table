@@ -82,23 +82,23 @@ def invoice():
         return redirect(url_for('appts.appointments'))
 
     invoice_id = session.get('invoice_id')
-    services = Service.query.options(
+    services = db.query(Service).options(
         joinedload(Service.note_links)
     ).all()
     
 
     if invoice_id:
-        invoice_to_display = Invoice.query.get_or_404(invoice_id)
+        invoice_to_display = db.query(Invoice).get_or_404(invoice_id)
         invoice_to_display.customer_name = appointment_data['name']
         invoice_to_display.customer_address = appointment_data['street_address']
-        db.session.commit()
+        db.commit()
     else:
         new_invoice = Invoice(
             customer_name=appointment_data['name'],
             customer_address=appointment_data['street_address'],
         )
-        db.session.add(new_invoice)
-        db.session.commit()
+        db.add(new_invoice)
+        db.commit()
         session['invoice_id'] = new_invoice.id
         invoice_to_display = new_invoice
 
