@@ -58,6 +58,7 @@ main {
     flex-grow: 1;
     z-index: 1;
     box-shadow: var(--footer-box-shadow);
+    min-height: 100vh;
 }
 
 footer {
@@ -388,6 +389,23 @@ a.active {
 
 a:active, nav a:active, nav a.active:active {
     color: var(--primary);
+}
+
+.homepage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px; /* Adjust spacing between elements if needed */
+    padding-top: 10%;
+}
+.homepage h2 {
+    margin: 0; /* Remove default margins for proper alignment */
+    font-size: 12em;
+    font-weight: normal;
+}
+.homepage img {
+    width: 10em;
+    height: 10em;
 }
 
 @media (max-width: 768px) {

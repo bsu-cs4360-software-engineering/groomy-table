@@ -6,7 +6,7 @@ from login_manager import login_manager
 from database import db
 
 from models.user import User
-from models.password import UserPass
+from models.password import UserPassword
 from models.customer import Customer
 
 @pytest.fixture()
@@ -18,7 +18,7 @@ def app():
     with app.app_context():
         db.create_all()
 
-        passwrd = UserPass(
+        passwrd = UserPassword(
             password_hash=generate_password_hash('testpassword')
         )
 
