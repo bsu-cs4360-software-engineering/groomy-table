@@ -3,10 +3,10 @@ from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from models.user import User
-from models.password import UserPass
+from models.password import UserPassword
 
 def test_create_user(database):
-    password = UserPass(
+    password = UserPassword(
         password_hash='newuserpass'
     )
 
@@ -27,7 +27,7 @@ def test_create_user(database):
     assert user.email == 'newuser@email.com'
 
 def test_unique_username(database):
-    password = UserPass(
+    password = UserPassword(
         password_hash='newuserpass'
     )
 
@@ -55,7 +55,7 @@ def test_unique_username(database):
         database.commit()
 
 def test_unique_email(database):
-    password = UserPass(
+    password = UserPassword(
         password_hash='newuserpass'
     )
 
@@ -85,7 +85,7 @@ def test_unique_email(database):
 def test_hashed_password(database):
     plain_password = 'newuserpass'
 
-    password = UserPass(
+    password = UserPassword(
         password_hash=generate_password_hash('newuserpass')
     )
 
