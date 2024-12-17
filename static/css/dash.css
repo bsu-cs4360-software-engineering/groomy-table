@@ -161,7 +161,8 @@ a.logout {
     background: var(--white);
 }
 
-.nav-links li a.active#appointments svg {
+.nav-links li a.active#appointments svg,
+.nav-links li a.active#invoices svg path {
     fill: var(--primary);
 }
 

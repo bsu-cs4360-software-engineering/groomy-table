@@ -13,6 +13,7 @@ from models.place import Place
 from models.note_link import NoteLink
 from models.appointment_form import AppointmentForm
 from models.service import Service
+from models.invoice import Invoice
 
 dash = Blueprint('dash', __name__)
 
@@ -81,6 +82,15 @@ def customers():
 
     return render_template('view_customers.html',
                             customers=customers,
+                            user=current_user)
+
+@dash.route('/dashboard/invoices')
+@login_required
+def invoices():
+    invoices = db.query(Invoice).order_by(Invoice.issue_date).all()
+
+    return render_template('view_invoices.html',
+                            invoices=invoices,
                             user=current_user)
 
 @dash.route('/dashboard/add_service', methods=['GET', 'POST'])

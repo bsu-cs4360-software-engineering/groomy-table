@@ -1,0 +1,32 @@
+{% extends 'base-dash.html' %}
+{% block head %}
+<title>Invoices - Groomy</title>
+{% endblock %}
+
+{% block main %}
+<section class="flex-column">
+    <div class="section-header">
+        <h1>Invoices</h1>
+    </div>
+    <table class="section-table">
+        <tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Issue Date</th>
+            <th>Total Amount</th>
+            <th>Paid Status</th>
+        </tr>
+        {% if invoices %}
+            {% for invoice in invoices %}
+                <tr data-id="{{ invoice.id }}">
+                    <td>{{ invoice.customer_name }}</td>
+                    <td>{{ invoice.customer_address }}</td>
+                    <td>{{ invoice.issue_date }}</td>
+                    <td>{{ invoice.total_amount }}</td>
+                    <td>{{ invoice.paid }}</td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+    </table>
+</section>
+{% endblock %}
